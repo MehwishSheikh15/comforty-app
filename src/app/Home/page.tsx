@@ -75,7 +75,7 @@ const Hero = () => {
 
           {/* Right Side - Product Image */}
           <div className="flex-shrink-0">
-            <Image
+            <img
               src="Product Image.png"  
               alt="Product"
               className="w-full sm:w-[400px] h-full rounded-lg"
