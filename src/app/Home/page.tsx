@@ -2,7 +2,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useCart } from '../context/cartContext'; 
-import Image from 'next/image';
 
 const Hero = () => {
   const { addToCart } = useCart(); 
@@ -85,7 +84,7 @@ const Hero = () => {
       </div>
        {/* Company Logo Section */}
       <div className="flex justify-center mt-8">
-         <Image 
+         <img 
           src="./CompanyLogo.png" 
          alt="Company Logo"
           className="h-16 sm:h-24 rounded-full w-auto"
@@ -104,7 +103,7 @@ const Hero = () => {
                   {product.label.toUpperCase()}
                 </span>
               )}
-              <Image 
+              <img 
                 src={product.image}
                 alt={product.name}
                 className="w-full h-50 object-cover rounded-lg mb-4"
@@ -128,7 +127,7 @@ const Hero = () => {
                 })}
                 className="bg-[#029FAE] text-white py-2 px-4 rounded-full flex items-center"
               >
-                <Image src="https://cdn-icons-png.flaticon.com/128/2543/2543369.png" alt="Add to Cart" className="h-5 w-5 mr-2" />
+                <img src="https://cdn-icons-png.flaticon.com/128/2543/2543369.png" alt="Add to Cart" className="h-5 w-5 mr-2" />
                 Add to Cart
               </button>
             </div>
@@ -142,7 +141,7 @@ const Hero = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {['Living Room', 'Office', 'Outdoor'].map((category, index) => (
             <div key={index} className="relative">
-              <Image 
+              <img 
                 src={`./category${index + 1}.png`} 
                 alt={category}
                 className="w-full h-full object-cover rounded-lg"
@@ -159,7 +158,7 @@ const Hero = () => {
       {/* Custom Layout Section */}
       <div className="mt-16 flex flex-wrap">
         <div className="w-full md:w-1/2 relative">
-          <Image
+          <img
             src="./custom-image-left.png" 
             alt="Custom Left"
             className="w-full h-full rounded-lg"
@@ -170,7 +169,7 @@ const Hero = () => {
         </div>
         <div className="w-full md:w-1/2 grid grid-cols-2 gap-4">
           {['collage1', 'collage2', 'collage3', 'collage4'].map((image, index) => (
-            <Image
+            <img
               key={index}
               src={`./product${index + 5}.png`} 
               alt={`Product ${index + 5}`}
@@ -187,7 +186,7 @@ const Hero = () => {
           {/* Map through the our products fetched from API */}
           {ourProducts.map((product) => (
             <div key={product.id} className="bg-gray-100 p-4 rounded-lg shadow-md">
-              <Image
+              <img
                 src={product.image} 
                 alt={product.name}
                 className="w-full h-50 object-cover rounded-lg mb-4"
@@ -204,7 +203,7 @@ const Hero = () => {
                 })}
                 className="bg-[#029FAE] text-white py-2 px-4 rounded-full flex items-center"
               >
-                <Image src="https://cdn-icons-png.flaticon.com/128/2543/2543369.png" alt="Add to Cart" className="h-5 w-5 mr-2" />
+                <img src="https://cdn-icons-png.flaticon.com/128/2543/2543369.png" alt="Add to Cart" className="h-5 w-5 mr-2" />
                 Add to Cart
               </button>
             </div>
