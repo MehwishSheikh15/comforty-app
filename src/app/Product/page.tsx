@@ -66,7 +66,7 @@ const ProductPage: React.FC = () => {
               onClick={() => handleAddToCart(product)}
               className="bg-[#029FAE] text-white py-2 px-4 rounded-full shadow-md flex items-center justify-center hover:bg-[#027a8b] transition-colors duration-300"
             >
-              <Image
+              <img
                 src="https://cdn-icons-png.flaticon.com/128/2543/2543369.png"
                 alt="Add to Cart"
                 className="h-5 w-5 mr-2"
