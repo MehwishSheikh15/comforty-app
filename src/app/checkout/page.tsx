@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useCart } from "../context/cartContext";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const CheckoutPage: React.FC = () => {
   const { cart, clearCart } = useCart(); 
@@ -120,7 +121,7 @@ const CheckoutPage: React.FC = () => {
       {orderSuccess && (
         <div className="mt-6 text-center">
           <div className="flex flex-col items-center">
-            <img
+            <Image
               src="/favicon.ico"
               alt="Comforty Logo"
               className="w-20 h-20 mb-4"

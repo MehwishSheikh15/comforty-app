@@ -3,6 +3,7 @@
 import React from "react";
 import { useCart } from "../context/cartContext";
 import Link from "next/link";
+import Image from "next/image";
 
 const CartPage: React.FC = () => {
   const { cart, removeFromCart } = useCart();
@@ -18,7 +19,7 @@ const CartPage: React.FC = () => {
         <>
           {cart.map((item) => (
             <div key={item.id} className="flex justify-between items-center bg-gray-100 p-4 rounded-lg mb-4 shadow-md">
-              <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-md" />
+              <Image src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-md" />
               <div className="flex-1 ml-4">
                 <p className="text-lg font-semibold">{item.name}</p>
                 <p className="text-gray-600">{item.price}</p> {/* Display price with $ sign */}

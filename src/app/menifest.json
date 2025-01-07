@@ -8,12 +8,12 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "/facivon.ico.png",
+      "src": "/facivon.ico",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/facivon.ico.png",
+      "src": "/facivon.ico",
       "sizes": "512x512",
       "type": "image/png"
     }

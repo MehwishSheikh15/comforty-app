@@ -1,5 +1,6 @@
 
 'use client';
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { useCart } from "../context/cartContext";
 
@@ -54,7 +55,7 @@ const ProductPage: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {products.map((product) => (
           <div key={product.id} className="border p-4 rounded-lg flex flex-col h-full">
-            <img
+            <Image
               src={product.image}
               alt={product.name}
               className="w-full h-64 object-cover mb-4"
@@ -65,7 +66,7 @@ const ProductPage: React.FC = () => {
               onClick={() => handleAddToCart(product)}
               className="bg-[#029FAE] text-white py-2 px-4 rounded-full shadow-md flex items-center justify-center hover:bg-[#027a8b] transition-colors duration-300"
             >
-              <img
+              <Image
                 src="https://cdn-icons-png.flaticon.com/128/2543/2543369.png"
                 alt="Add to Cart"
                 className="h-5 w-5 mr-2"

@@ -134,7 +134,7 @@ type Product = {
   id: number;
   name: string;
   image: string;
-  price: number;
+  price: string | number ;
   priceNumeric: number;
   quantity: number;
 };

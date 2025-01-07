@@ -120,7 +120,7 @@ const Footer: FC = () => {
           </form>
           {isSubscribed && (
             <p className="text-xs text-green-600 mt-2">
-              Thank you for subscribing! You'll receive updates soon.
+              Thank you for subscribing! You will receive updates soon.
             </p>
           )}
           <p className="text-xs text-gray-600 mt-2">

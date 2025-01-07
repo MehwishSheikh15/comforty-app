@@ -3,6 +3,7 @@
 import React from "react";
 import { useCart } from "../context/cartContext"; 
 import Link from "next/link";
+import Image from "next/image";
 
 type Product = {
   id: number;
@@ -35,7 +36,7 @@ const HomePage: React.FC = () => {
       <div className="container mx-auto px-4 lg:px-8 flex flex-col lg:flex-row items-center lg:space-x-8">
         {/* Left Side - Image */}
         <div className="w-full lg:w-1/2 mb-8 lg:mb-0">
-          <img
+          <Image
             src="/product6.png" // Replace with your image path
             alt="Library Stool Chair"
             className="w-full h-auto rounded-lg shadow-lg hover:scale-105 transition-transform duration-300"
@@ -60,7 +61,7 @@ const HomePage: React.FC = () => {
               onClick={() => handleAddToCart({ id: 6, name: 'Library Stool Chair', price: '$20.00', image: '/product6.png', priceNumeric: 20.00 })}
               className="bg-[#029FAE] text-white py-2 px-4 rounded-full shadow-md flex items-center justify-center hover:bg-[#027a8b] transition-colors duration-300"
             >
-              <img
+              <Image
                 src="https://cdn-icons-png.flaticon.com/128/2543/2543369.png"
                 alt="Add to Cart"
                 className="h-5 w-5 mr-2"
@@ -83,7 +84,7 @@ const HomePage: React.FC = () => {
               key={product.id}
               className="border p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full bg-white"
             >
-              <img
+              <Image
                 src={product.image}
                 alt={product.name}
                 className="w-full h-48 object-cover mb-4 rounded-lg"
@@ -96,7 +97,7 @@ const HomePage: React.FC = () => {
                 onClick={() => handleAddToCart(product)} // Add to cart functionality
                 className="bg-[#029FAE] text-white py-2 px-4 rounded-full shadow-md flex items-center justify-center hover:bg-[#027a8b] transition-colors duration-300"
               >
-                <img
+                <Image
                   src="https://cdn-icons-png.flaticon.com/128/2543/2543369.png"
                   alt="Add to Cart"
                   className="h-5 w-5 mr-2"
