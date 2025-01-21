@@ -6,10 +6,9 @@ import { CiShoppingCart } from 'react-icons/ci';
 import { FiChevronDown } from 'react-icons/fi';
 import Link from 'next/link';
 import { HiMenu, HiX } from 'react-icons/hi';
-import { FaHeart, FaUser, FaClipboardList } from 'react-icons/fa'; // Import the order icon
+import { FaHeart} from 'react-icons/fa'; // Import the order icon
 import { useCart } from '../context/cartContext';
 import { useWishlist } from '../context/wishlistContext'; // Import the wishlist hook
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'; // Import Clerk components
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -94,29 +93,7 @@ const Navbar: React.FC = () => {
             </div>
           </Link>
 
-          {/* Account Section */}
-          <div className="flex items-center space-x-4">
-            <SignedOut>
-              <div className="flex items-center space-x-4">
-                <SignInButton>
-                  <button className="text-black  px-2  hover:underline">
-                    Sign In
-                  </button>
-                </SignInButton>
-                <Link href="/signup(.*)">
-                  <button className="text-black  px-2  hover:underline">
-                    Sign Up
-                  </button>
-                </Link>
-              </div>
-            </SignedOut>
-
-            <SignedIn>
-              <div className="flex items-center space-x-2">
-                <UserButton />
-              </div>
-            </SignedIn>
-          </div>
+          
         </div>
       </div>
 
