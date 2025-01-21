@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { client } from '@/sanity/lib/client'; // Adjust the path as necessary
 import { allProductsQuery } from '../api/query'; // Adjust the path as necessary
@@ -154,9 +155,11 @@ const ProductPage: React.FC = () => {
                   {product.badge.toUpperCase()}
                 </span>
               )}
-              <img
+              <Image
                 src={urlFor(product.image).width(500).url()}
                 alt={product.title}
+                height={40}
+              width={40}
                 className="w-full h-full object-cover rounded-lg"
               />
             </div>
@@ -224,9 +227,11 @@ const ProductPage: React.FC = () => {
           {products.slice(3, 9).map((product) => (
             <div key={product._id} className="bg-gray-100 p-4 rounded-lg shadow-md">
               <div className="relative w-full h-50 mb-4">
-                <img
+                <Image
                   src={urlFor(product.image).width(500).url()} // Generate image URL for product
                   alt={product.title}
+                  height={40}
+              width={40}
                   className="w-full h-full object-cover rounded-lg"
                 />
               </div>

@@ -152,7 +152,7 @@ const Navbar: React.FC = () => {
             </li>
             {/* Order Page Link */}
             <li>
-              <Link href="/order" className="text-teal-900 hover:text-teal-500 flex items-center space-x-1">
+              <Link href="/Order" className="text-teal-900 hover:text-teal-500 flex items-center space-x-1">
                 <FaClipboardList className="h-5 w-5" />
                 <span>Order</span>
               </Link>
@@ -208,7 +208,7 @@ const Navbar: React.FC = () => {
             </li>
             {/* Mobile Order Link */}
             <li>
-              <Link href="/order" className=" text-teal-500 hover:text-teal-950 flex items-center space-x-1">
+              <Link href="/Order" className=" text-teal-500 hover:text-teal-950 flex items-center space-x-1">
                 <FaClipboardList className="h-5 w-5" />
                 <span>Order</span>
               </Link>

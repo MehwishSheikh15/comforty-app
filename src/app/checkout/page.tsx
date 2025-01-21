@@ -1,5 +1,6 @@
 'use client';
-import Link from "next/link";
+
+import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { useCart } from "../context/cartContext";
 import { useRouter } from "next/navigation";
@@ -72,7 +73,7 @@ const CheckoutPage: React.FC = () => {
     setOrderSuccess(true);
     setTimeout(() => {
       clearCart(); // Clear the cart
-      router.push(`/order?orderNumber=${orderNumber}`); // Redirect to the order details page with the order number in the query string
+      router.push(`/Order?orderNumber=${orderNumber}`); // Redirect to the order details page with the order number in the query string
     }, 2000); // Wait for the success message before redirecting
   };
 
@@ -188,9 +189,12 @@ const CheckoutPage: React.FC = () => {
       {orderSuccess && (
         <div className="mt-6 text-center">
           <div className="flex flex-col items-center">
-            <img
+            <Image
               src="/favicon.ico"
+              height={40}
+              width={40}
               alt="Comforty Logo"
+              
               className="w-20 h-20 mb-4"
             />
             <p className="text-teal-600 font-bold text-lg">

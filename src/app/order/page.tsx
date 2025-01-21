@@ -1,4 +1,5 @@
 'use client'; // Ensure the component is client-side only
+export const dynamic = 'force-dynamic'; // Force dynamic rendering
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; // Use next/navigation for routing
@@ -18,7 +19,7 @@ const OrderPage: React.FC = () => {
       if (storedOrder) {
         setOrderData(JSON.parse(storedOrder));
       } else {
-        router.push('/'); // Redirect to homepage if order not found
+        router.push('/Home'); // Redirect to homepage if order not found
       }
     }
 
