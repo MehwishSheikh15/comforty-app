@@ -80,7 +80,7 @@ const CartPage: React.FC = () => {
                 <Image src={item.image} 
                 alt={item.name} 
                 width={10}
-                height={10}
+                height={40}
                 className="w-20 h-20" />
                 <div className="flex-1 ml-4">
                   <p className="text-lg font-semibold">{item.name}</p>
