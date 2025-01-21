@@ -1,30 +1,35 @@
 'use client';
+import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useCart } from "../context/cartContext";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { v4 as uuidv4 } from 'uuid'; // For generating unique order IDs
 
 const CheckoutPage: React.FC = () => {
-  const { cart, clearCart } = useCart(); 
+  const { cart, clearCart } = useCart();
   const [form, setForm] = useState({
     name: "",
     address: "",
     country: "",
     city: "",
     zip: "",
+    email: "",
+    phone: "",
     payment: "",
+    shippingMethod: "",
+    orderNotes: "",
   });
   const [error, setError] = useState("");
-  const [orderSuccess, setOrderSuccess] = useState(false); // State for success message
+  const [orderSuccess, setOrderSuccess] = useState(false);
   const router = useRouter();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleOrder = () => {
     // Validate form
-    if (!form.name || !form.address || !form.country || !form.city || !form.zip || !form.payment) {
+    if (!form.name || !form.address || !form.country || !form.city || !form.zip || !form.email || !form.phone || !form.payment || !form.shippingMethod) {
       setError("Please fill in all the fields.");
       return;
     }
@@ -35,33 +40,59 @@ const CheckoutPage: React.FC = () => {
     }
 
     setError("");
-    setOrderSuccess(true); // Show success message
 
-    // Simulate order placement
+    // Create a unique order number using UUID
+    const orderNumber = uuidv4();
+
+    // Store order details (e.g., in localStorage or send to the backend)
+    const orderData = {
+      orderNumber,
+      name: form.name,
+      address: form.address,
+      email: form.email,
+      phone: form.phone,
+      paymentStatus: form.payment === "online" ? "Pending" : "COD",
+      shippingMethod: form.shippingMethod,
+      orderNotes: form.orderNotes,
+      products: cart,
+      totalPrice: cart.reduce((total, item) => total + item.price * item.quantity, 0), // Example calculation for total price
+      shipmentTracking: form.shippingMethod === "express" ? "Tracking12345" : "N/A", // Example tracking number
+    };
+
+    // Store order data in localStorage (or use a backend API to save)
+    localStorage.setItem(orderNumber, JSON.stringify(orderData));
+
+    // If online payment is selected, redirect to EasyPaisa
+    if (form.payment === "online") {
+      window.location.href = "https://www.easypaisa.com.pk/"; // Replace with actual EasyPaisa payment URL
+      return;
+    }
+
+    // Simulate order success and navigate to the order page
+    setOrderSuccess(true);
     setTimeout(() => {
-      clearCart(); // Clear cart items
-    }, 2000); // Wait for the success message to be shown before clearing cart
+      clearCart(); // Clear the cart
+      router.push(`/order?orderNumber=${orderNumber}`); // Redirect to the order details page with the order number in the query string
+    }, 2000); // Wait for the success message before redirecting
   };
 
   useEffect(() => {
     if (orderSuccess) {
-      // Redirect to homepage after 3 seconds
-      setTimeout(() => {
-        router.push("/"); // Redirect to homepage
-      }, 3000);
+      // We no longer need to redirect to the homepage here
     }
-  }, [orderSuccess, router]);
+  }, [orderSuccess]);
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-3xl font-bold text-center mb-6 text-indigo-900">Checkout</h2>
+
       <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form className="space-y-4">
           <input
             type="text"
             name="name"
             placeholder="First and Last Name"
-            className="border p-3 rounded-lg"
+            className="border p-3 rounded-lg w-full"
             value={form.name}
             onChange={handleInputChange}
           />
@@ -69,7 +100,7 @@ const CheckoutPage: React.FC = () => {
             type="text"
             name="address"
             placeholder="Address"
-            className="border p-3 rounded-lg"
+            className="border p-3 rounded-lg w-full"
             value={form.address}
             onChange={handleInputChange}
           />
@@ -77,7 +108,7 @@ const CheckoutPage: React.FC = () => {
             type="text"
             name="country"
             placeholder="Country"
-            className="border p-3 rounded-lg"
+            className="border p-3 rounded-lg w-full"
             value={form.country}
             onChange={handleInputChange}
           />
@@ -85,7 +116,7 @@ const CheckoutPage: React.FC = () => {
             type="text"
             name="city"
             placeholder="City"
-            className="border p-3 rounded-lg"
+            className="border p-3 rounded-lg w-full"
             value={form.city}
             onChange={handleInputChange}
           />
@@ -93,14 +124,48 @@ const CheckoutPage: React.FC = () => {
             type="text"
             name="zip"
             placeholder="ZIP Code"
-            className="border p-3 rounded-lg"
+            className="border p-3 rounded-lg w-full"
             value={form.zip}
+            onChange={handleInputChange}
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email Address"
+            className="border p-3 rounded-lg w-full"
+            value={form.email}
+            onChange={handleInputChange}
+          />
+          <input
+            type="text"
+            name="phone"
+            placeholder="Phone Number"
+            className="border p-3 rounded-lg w-full"
+            value={form.phone}
+            onChange={handleInputChange}
+          />
+          <select
+            name="shippingMethod"
+            onChange={handleInputChange}
+            className="border p-3 rounded-lg w-full"
+            value={form.shippingMethod}
+          >
+            <option value="">Select Shipping Method</option>
+            <option value="standard">Standard Shipping</option>
+            <option value="express">Express Shipping</option>
+            <option value="overnight">Overnight Shipping</option>
+          </select>
+          <textarea
+            name="orderNotes"
+            placeholder="Order Notes (Optional)"
+            className="border p-3 rounded-lg w-full"
+            value={form.orderNotes}
             onChange={handleInputChange}
           />
           <select
             name="payment"
             onChange={handleInputChange}
-            className="border p-3 rounded-lg"
+            className="border p-3 rounded-lg w-full"
             value={form.payment}
           >
             <option value="">Select Payment Method</option>
@@ -108,7 +173,9 @@ const CheckoutPage: React.FC = () => {
             <option value="online">Online Payment</option>
           </select>
         </form>
+
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
         <button
           type="button"
           onClick={handleOrder}
@@ -121,7 +188,7 @@ const CheckoutPage: React.FC = () => {
       {orderSuccess && (
         <div className="mt-6 text-center">
           <div className="flex flex-col items-center">
-            <Image
+            <img
               src="/favicon.ico"
               alt="Comforty Logo"
               className="w-20 h-20 mb-4"
@@ -129,7 +196,7 @@ const CheckoutPage: React.FC = () => {
             <p className="text-teal-600 font-bold text-lg">
               Thank you for your order! Comforty has successfully placed your order.
             </p>
-            <p className="text-gray-600 mt-2">Redirecting to homepage...</p>
+            <p className="text-gray-600 mt-2">Redirecting to your order details...</p>
           </div>
         </div>
       )}

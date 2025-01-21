@@ -1,102 +1,59 @@
+
+
 // 'use client';
+
 // import React, { createContext, useContext, useState } from "react";
 
-// type CartItem = {
-//   id: number;
+// // Define the Product type based on the structure from ProductPage
+// type Product = {
+//   id: string;  // Use the _id from the product
 //   name: string;
 //   image: string;
-//   price: string;
+//   price: number;
+//   quantity: number;
+//   description: string;
+//   size?: string;  // Optional size, if applicable
+// };
+
+// // CartItem extends Product, adding quantity
+// type CartItem = Product & {
 //   quantity: number;
 // };
 
 // type CartContextType = {
 //   cart: CartItem[];
+//   wishlist: CartItem[];
 //   addToCart: (item: CartItem) => void;
-//   removeFromCart: (id: number) => void;
+//   removeFromCart: (id: string) => void;
+//   updateCartQuantity: (id: string, quantityChange: number) => void;
 //   clearCart: () => void;
+//   addToWishlist: (item: CartItem) => void; // Add to wishlist
+//   removeFromWishlist: (id: string) => void; // Remove from wishlist
 // };
 
 // const CartContext = createContext<CartContextType | undefined>(undefined);
 
 // export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 //   const [cart, setCart] = useState<CartItem[]>([]);
+//   const [wishlist, setWishlist] = useState<CartItem[]>([]); // Wishlist state
 
+//   // Function to add a product to the cart
 //   const addToCart = (item: CartItem) => {
 //     setCart((prevCart) => {
 //       const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
 //       if (existingItem) {
 //         return prevCart.map((cartItem) =>
 //           cartItem.id === item.id
-//             ? { ...cartItem, quantity: cartItem.quantity + 1 }
+//             ? { ...cartItem, quantity: cartItem.quantity + item.quantity }  // Add the quantity
 //             : cartItem
 //         );
 //       }
-//       return [...prevCart, { ...item, quantity: 1 }];
+//       return [...prevCart, item];
 //     });
 //   };
 
-//   const removeFromCart = (id: number) => {
-//     setCart((prevCart) => prevCart.filter((item) => item.id !== id));
-//   };
-
-//   const clearCart = () => {
-//     setCart([]);
-//   };
-
-//   return (
-//     <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
-//       {children}
-//     </CartContext.Provider>
-//   );
-// };
-
-// export const useCart = () => {
-//   const context = useContext(CartContext);
-//   if (!context) {
-//     throw new Error("useCart must be used within a CartProvider");
-//   }
-//   return context;
-// };
-// 'use client';
-// import React, { createContext, useContext, useState } from "react";
-
-// type CartItem = {
-//   id: number;
-//   name: string;
-//   image: string;
-//   price: string;
-//   quantity: number;
-//   priceNumeric: number;
-// };
-
-
-// type CartContextType = {
-//   cart: CartItem[];
-//   addToCart: (item: CartItem) => void;
-//   removeFromCart: (id: number) => void;
-//   clearCart: () => void;
-// };
-
-// const CartContext = createContext<CartContextType | undefined>(undefined);
-
-// export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-//   const [cart, setCart] = useState<CartItem[]>([]);
-
-//   const addToCart = (item: CartItem) => {
-//     setCart((prevCart) => {
-//       const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
-//       if (existingItem) {
-//         return prevCart.map((cartItem) =>
-//           cartItem.id === item.id
-//             ? { ...cartItem, quantity: cartItem.quantity + 1 }
-//             : cartItem
-//         );
-//       }
-//       return [...prevCart, { ...item, quantity: 1 }];
-//     });
-//   };
-
-//   const removeFromCart = (id: number) => {
+//   // Function to remove a product from the cart
+//   const removeFromCart = (id: string) => {
 //     setCart((prevCart) =>
 //       prevCart
 //         .map((cartItem) =>
@@ -104,21 +61,49 @@
 //             ? { ...cartItem, quantity: cartItem.quantity - 1 }
 //             : cartItem
 //         )
-//         .filter((cartItem) => cartItem.quantity > 0)
+//         .filter((cartItem) => cartItem.quantity > 0) // Remove item if quantity is 0
 //     );
 //   };
 
+//   // Function to update the quantity of an item in the cart
+//   const updateCartQuantity = (id: string, quantityChange: number) => {
+//     setCart((prevCart) =>
+//       prevCart.map((cartItem) =>
+//         cartItem.id === id
+//           ? { ...cartItem, quantity: Math.max(cartItem.quantity + quantityChange, 1) } // Ensure quantity doesn't go below 1
+//           : cartItem
+//       )
+//     );
+//   };
+
+//   // Function to clear the cart
 //   const clearCart = () => {
 //     setCart([]);
 //   };
 
+//   // Add item to wishlist
+//   const addToWishlist = (item: CartItem) => {
+//     setWishlist((prevWishlist) => {
+//       if (!prevWishlist.find((wishlistItem) => wishlistItem.id === item.id)) {
+//         return [...prevWishlist, item]; // Add item if not already in wishlist
+//       }
+//       return prevWishlist;
+//     });
+//   };
+
+//   // Remove item from wishlist
+//   const removeFromWishlist = (id: string) => {
+//     setWishlist((prevWishlist) => prevWishlist.filter((item) => item.id !== id));
+//   };
+
 //   return (
-//     <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+//     <CartContext.Provider value={{ cart, wishlist, addToCart, removeFromCart, updateCartQuantity, clearCart, addToWishlist, removeFromWishlist }}>
 //       {children}
 //     </CartContext.Provider>
 //   );
 // };
 
+// // Custom hook to use the Cart context
 // export const useCart = () => {
 //   const context = useContext(CartContext);
 //   if (!context) {
@@ -127,60 +112,80 @@
 //   return context;
 // };
 'use client';
+
 import React, { createContext, useContext, useState } from "react";
 
-// Define the Product type
+// Define the Product type based on the structure from ProductPage
 type Product = {
-  id: number;
+  id: string;  // Use the _id from the product
   name: string;
   image: string;
-  price: string | number ;
-  priceNumeric: number;
+  price: number;
+  priceWithoutDiscount?: number; // Optional price without discount
   quantity: number;
+  description: string;
+  inventory: number; // Inventory field
+  badge?: string;  // Optional badge (Sales, New, etc.)
+  tags: string[];  // Tags for filtering or search
 };
 
-// CartItem extends Product, adding quantity
 type CartItem = Product & {
   quantity: number;
 };
 
 type CartContextType = {
   cart: CartItem[];
+  wishlist: CartItem[];
   addToCart: (item: CartItem) => void;
-  removeFromCart: (id: number) => void;
+  removeFromCart: (id: string) => void;
+  updateCartQuantity: (id: string, quantityChange: number) => void;
   clearCart: () => void;
+  addToWishlist: (item: CartItem) => void; // Add to wishlist
+  removeFromWishlist: (id: string) => void; // Remove from wishlist
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [wishlist, setWishlist] = useState<CartItem[]>([]); // Wishlist state
 
   // Function to add a product to the cart
   const addToCart = (item: CartItem) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
       if (existingItem) {
+        // If item exists in cart, update quantity, but ensure inventory is not exceeded
+        const newQuantity = Math.min(existingItem.quantity + item.quantity, existingItem.inventory);
         return prevCart.map((cartItem) =>
           cartItem.id === item.id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            ? { ...cartItem, quantity: newQuantity }  // Add the quantity without exceeding inventory
             : cartItem
         );
       }
-      return [...prevCart, { ...item, quantity: 1 }];
+      // If item is not in the cart, add it
+      return [...prevCart, item];
     });
   };
 
   // Function to remove a product from the cart
-  const removeFromCart = (id: number) => {
+  const removeFromCart = (id: string) => {
     setCart((prevCart) =>
-      prevCart
-        .map((cartItem) =>
-          cartItem.id === id
-            ? { ...cartItem, quantity: cartItem.quantity - 1 }
-            : cartItem
-        )
-        .filter((cartItem) => cartItem.quantity > 0)
+      prevCart.filter((cartItem) => cartItem.id !== id)
+    );
+  };
+
+  // Function to update the quantity of an item in the cart
+  const updateCartQuantity = (id: string, quantityChange: number) => {
+    setCart((prevCart) =>
+      prevCart.map((cartItem) =>
+        cartItem.id === id
+          ? {
+              ...cartItem,
+              quantity: Math.max(cartItem.quantity + quantityChange, 1), // Ensure quantity doesn't go below 1
+            }
+          : cartItem
+      )
     );
   };
 
@@ -189,8 +194,23 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCart([]);
   };
 
+  // Add item to wishlist
+  const addToWishlist = (item: CartItem) => {
+    setWishlist((prevWishlist) => {
+      if (!prevWishlist.find((wishlistItem) => wishlistItem.id === item.id)) {
+        return [...prevWishlist, item]; // Add item if not already in wishlist
+      }
+      return prevWishlist;
+    });
+  };
+
+  // Remove item from wishlist
+  const removeFromWishlist = (id: string) => {
+    setWishlist((prevWishlist) => prevWishlist.filter((item) => item.id !== id));
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider value={{ cart, wishlist, addToCart, removeFromCart, updateCartQuantity, clearCart, addToWishlist, removeFromWishlist }}>
       {children}
     </CartContext.Provider>
   );
