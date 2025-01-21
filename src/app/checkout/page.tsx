@@ -1,10 +1,10 @@
 'use client';
 
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useCart } from "../context/cartContext";
 import { useRouter } from "next/navigation";
-import { v4 as uuidv4 } from 'uuid'; // For generating unique order IDs
+import { v4 as uuidv4 } from "uuid"; // For generating unique order IDs
 
 const CheckoutPage: React.FC = () => {
   const { cart, clearCart } = useCart();
@@ -24,13 +24,25 @@ const CheckoutPage: React.FC = () => {
   const [orderSuccess, setOrderSuccess] = useState(false);
   const router = useRouter();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleOrder = () => {
     // Validate form
-    if (!form.name || !form.address || !form.country || !form.city || !form.zip || !form.email || !form.phone || !form.payment || !form.shippingMethod) {
+    if (
+      !form.name ||
+      !form.address ||
+      !form.country ||
+      !form.city ||
+      !form.zip ||
+      !form.email ||
+      !form.phone ||
+      !form.payment ||
+      !form.shippingMethod
+    ) {
       setError("Please fill in all the fields.");
       return;
     }
@@ -56,8 +68,12 @@ const CheckoutPage: React.FC = () => {
       shippingMethod: form.shippingMethod,
       orderNotes: form.orderNotes,
       products: cart,
-      totalPrice: cart.reduce((total, item) => total + item.price * item.quantity, 0), // Example calculation for total price
-      shipmentTracking: form.shippingMethod === "express" ? "Tracking12345" : "N/A", // Example tracking number
+      totalPrice: cart.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+      ),
+      shipmentTracking:
+        form.shippingMethod === "express" ? "Tracking12345" : "N/A",
     };
 
     // Store order data in localStorage (or use a backend API to save)
@@ -73,19 +89,15 @@ const CheckoutPage: React.FC = () => {
     setOrderSuccess(true);
     setTimeout(() => {
       clearCart(); // Clear the cart
-      router.push(`/Order?orderNumber=${orderNumber}`); // Redirect to the order details page with the order number in the query string
-    }, 2000); // Wait for the success message before redirecting
+      router.push(`/Order?orderNumber=${orderNumber}`); // Redirect to the order details page
+    }, 2000);
   };
-
-  useEffect(() => {
-    if (orderSuccess) {
-      // We no longer need to redirect to the homepage here
-    }
-  }, [orderSuccess]);
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h2 className="text-3xl font-bold text-center mb-6 text-indigo-900">Checkout</h2>
+      <h2 className="text-3xl font-bold text-center mb-6 text-indigo-900">
+        Checkout
+      </h2>
 
       <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
         <form className="space-y-4">
@@ -194,13 +206,15 @@ const CheckoutPage: React.FC = () => {
               height={40}
               width={40}
               alt="Comforty Logo"
-              
               className="w-20 h-20 mb-4"
             />
             <p className="text-teal-600 font-bold text-lg">
-              Thank you for your order! Comforty has successfully placed your order.
+              Thank you for your order! Comforty has successfully placed your
+              order.
             </p>
-            <p className="text-gray-600 mt-2">Redirecting to your order details...</p>
+            <p className="text-gray-600 mt-2">
+              Redirecting to your order details...
+            </p>
           </div>
         </div>
       )}
