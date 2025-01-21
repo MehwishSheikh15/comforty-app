@@ -1,3 +1,5 @@
+
+'use client';
 // Import environment variables from .env.local
 import "dotenv/config";
 

@@ -1,18 +1,5 @@
-// import { SignIn } from '@clerk/nextjs';
 
-// const CustomSignIn = () => {
-//   return (
-//     <div className="custom-sign-in-container">
-//       <h2>Welcome Back! Please sign in
-       
-//       </h2>
-//       <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" />
-//     </div>
-//   );
-// };
-
-// export default CustomSignIn;
-
+'use client';
 import { SignIn, SignUp } from '@clerk/nextjs';
 
 const CustomSignIn = () => {

@@ -1,5 +1,5 @@
 
-
+'use client';
 import { SignUp } from '@clerk/nextjs';
 import Head from 'next/head';
 
