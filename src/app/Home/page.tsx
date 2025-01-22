@@ -1,6 +1,5 @@
 
 'use client';
-import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { useCart } from '../context/cartContext';
 import { createClient } from '@sanity/client';
@@ -97,11 +96,10 @@ const Hero = () => {
 
           {/* Right Side - Product Image */}
           <div className="flex-shrink-0">
-            <Image
-              src="Product Image.png"  
+            <img
+              src="/Product Image.png"  
               alt="Product"
-              height={40}
-              width={40}
+              
               className="w-full sm:w-[400px] h-full rounded-lg"
             />
           </div>
@@ -109,11 +107,10 @@ const Hero = () => {
       </div>
       {/* Company Logo Section */}
       <div className="flex justify-center mt-8">
-        <Image
-          src="./CompanyLogo.png" 
+        <img
+          src="/CompanyLogo.png" 
           alt="Company Logo"
-          height={40}
-          width={40}
+          
           className="h-16 sm:h-24 rounded-full w-auto"
         />
       </div>
@@ -140,11 +137,10 @@ const Hero = () => {
                   {product.badge.toUpperCase()}
                 </span>
               )}
-              <Image 
+              <img 
                 src={urlFor(product.image)} // Generate image URL using the Sanity image builder
                 alt={product.title}
-                height={40}
-                width={40}
+                
                 className="w-full h-50 object-cover rounded-lg mb-4"
               />
               <h3 className="text-lg font-semibold">{product.title}</h3>
@@ -169,8 +165,8 @@ const Hero = () => {
                 })}
                 className="bg-[#029FAE] text-white py-2 px-4 rounded-full flex items-center"
               >
-                <Image src="https://cdn-icons-png.flaticon.com/128/2543/2543369.png" alt="Add to Cart" height={40}
-              width={40} className="h-5 w-5 mr-2" />
+                <img src="https://cdn-icons-png.flaticon.com/128/2543/2543369.png" alt="Add to Cart" 
+             className="h-5 w-5 mr-2" />
                 Add to Cart
               </button>
             </div>
@@ -184,11 +180,10 @@ const Hero = () => {
   <div className="w-full md:w-1/2 relative pr-4">
   
     {/* Left Image */}
-    <Image
-      src="./custom-image-left.png"
+    <img
+      src="/custom-image-left.png"
       alt="Custom Left"
-      height={40}
-              width={40}
+   
       className="w-full h-auto rounded-lg"
     />
     {/* Vertical Text */}
@@ -200,12 +195,11 @@ const Hero = () => {
   {/* Right Section: Collage */}
   <div className="w-full md:w-1/2 grid grid-cols-2 gap-4 pl-4">
     {['collage1', 'collage2', 'collage3', 'collage4'].map((image, index) => (
-      <Image
+      <img
         key={index}
-        src={`./product${index + 5}.png`}
+        src={`/product${index + 5}.png`}
         alt={`Product ${index + 5}`}
-        height={40}
-              width={40}
+     
         className="w-full h-auto object-cover rounded-lg"
       />
     ))}
@@ -220,11 +214,10 @@ const Hero = () => {
        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">        
         {categories.map((category) => (
             <div key={category._id} className="relative">
-              <Image
+              <img
                 src={urlFor(category.image)} // Generate image URL using the Sanity image builder
                 alt={category.title}
-                height={40}
-              width={40}
+                
                 className="w-full h-full object-cover rounded-lg"
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gray-800 bg-opacity-75 text-white text-center py-2">
@@ -243,11 +236,10 @@ const Hero = () => {
           {/* Map through the our products fetched from Sanity */}
           {ourProducts.map((product) => (
             <div key={product._id} className="bg-gray-100 p-4 rounded-lg shadow-md">
-              <Image
+              <img
                 src={urlFor(product.image)} // Generate image URL using the Sanity image builder
                 alt={product.title}
-                height={40}
-              width={40}
+              
                 className="w-full h-50 object-cover rounded-lg mb-4"
               />
               <h3 className="text-lg font-semibold">{product.title}</h3>
@@ -266,8 +258,8 @@ const Hero = () => {
                 })}
                 className="bg-[#029FAE] text-white py-2 px-4 rounded-full flex items-center"
               >
-                <Image src="https://cdn-icons-png.flaticon.com/128/2543/2543369.png" alt="Add to Cart" height={40}
-              width={40} className="h-5 w-5 mr-2" />
+                <img src="https://cdn-icons-png.flaticon.com/128/2543/2543369.png" alt="Add to Cart" 
+              className="h-5 w-5 mr-2" />
                 Add to Cart
               </button>
             </div>
