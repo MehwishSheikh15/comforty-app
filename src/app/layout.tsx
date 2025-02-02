@@ -111,6 +111,47 @@
 // }
 
 // RootLayout.tsx
+// 'use client';
+// import { ClerkProvider } from '@clerk/nextjs';
+// import { CartProvider } from './context/cartContext';
+// import { WishlistProvider } from './context/wishlistContext';
+// import { loadStripe } from '@stripe/stripe-js';
+// import { Elements } from '@stripe/react-stripe-js';
+
+// import './globals.css';
+// import Navbar from './component/Navbar';
+// import Footer from './component/Footer';
+
+// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
+
+// export default function RootLayout({
+//   children,
+// }: {
+//   children: React.ReactNode;
+// }) {
+//   if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+//     console.error('Stripe publishable key is not defined.');
+//   }
+
+//   return (
+//     <ClerkProvider>
+//       <CartProvider>
+//         <WishlistProvider>
+//           <Elements stripe={stripePromise}>
+//             <html lang="en">
+//               <body>
+//                 <Navbar />
+//                 {children}
+//                 <Footer />
+//               </body>
+//             </html>
+//           </Elements>
+//         </WishlistProvider>
+//       </CartProvider>
+//     </ClerkProvider>
+//   );
+// }
+
 
 import { ClerkProvider } from '@clerk/nextjs';
 import { CartProvider } from './context/cartContext';

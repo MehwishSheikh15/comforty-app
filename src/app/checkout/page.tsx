@@ -89,7 +89,7 @@
 //     setOrderSuccess(true);
 //     setTimeout(() => {
 //       clearCart(); // Clear the cart
-//       router.push(`/Order?orderNumber=${orderNumber}`); // Redirect to the order details page
+//       router.push(`/order?orderNumber=${orderNumber}`); // Redirect to the order details page
 //     }, 2000);
 //   };
 
@@ -223,228 +223,929 @@
 // };
 
 // export default CheckoutPage;
-'use client';
 
-import Image from "next/image";
-import React, { useState } from "react";
-import { useCart } from "../context/cartContext";
-import { useRouter } from "next/navigation";
-import { v4 as uuidv4 } from "uuid"; // For generating unique order IDs
 
-const CheckoutPage: React.FC = () => {
-  const { cart, clearCart } = useCart();
-  const [form, setForm] = useState({
-    name: "",
-    address: "",
-    country: "",
-    city: "",
-    zip: "",
-    email: "",
-    phone: "",
-    payment: "",
-    shippingMethod: "",
-    orderNotes: "",
-  });
-  const [error, setError] = useState("");
-  const [orderSuccess, setOrderSuccess] = useState(false);
-  const router = useRouter();
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
-  const handleOrder = () => {
-    // Validate form
-    if (
-      !form.name ||
-      !form.address ||
-      !form.country ||
-      !form.city ||
-      !form.zip ||
-      !form.email ||
-      !form.phone ||
-      !form.payment ||
-      !form.shippingMethod
-    ) {
-      setError("Please fill in all the fields.");
-      return;
-    }
 
-    if (cart.length === 0) {
-      setError("Your cart is empty.");
-      return;
-    }
 
-    setError("");
 
-    // Create a unique order number using UUID
-    const orderNumber = uuidv4();
 
-    // Store order details (e.g., in localStorage or send to the backend)
-    const orderData = {
-      orderNumber,
-      name: form.name,
-      address: form.address,
-      email: form.email,
-      phone: form.phone,
-      paymentStatus: form.payment === "online" ? "Pending" : "COD",
-      shippingMethod: form.shippingMethod,
-      orderNotes: form.orderNotes,
-      products: cart,
-      totalPrice: cart.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-      ),
-      shipmentTracking:
-        form.shippingMethod === "express" ? "Tracking12345" : "N/A",
+
+
+
+
+
+// "use client";
+// import convertToSubCurrency from '../lib/ConvertToSubCurrency';
+// import CheckoutPage from '@/app/Stripe/CheckoutPage';
+// import { Elements } from '@stripe/react-stripe-js';
+// import { loadStripe } from '@stripe/stripe-js';
+
+// if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+//     throw new Error('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not defined');
+// }
+
+// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+
+// const Checkout = () => {
+//     const amount = 49.99;
+
+//     return (
+//         <div>
+//             <h1 className='text-3xl font-bold text-center'>Complete Your Payment</h1>
+
+//             <Elements
+//                 stripe={stripePromise}
+//                 options={{
+//                     mode: 'payment',
+//                     amount: convertToSubCurrency(amount),
+//                     currency: 'usd'
+//                 }}
+//             >
+//                 <CheckoutPage amount={amount} />
+//             </Elements>
+//         </div>
+//     );
+// };
+
+// export default Checkout;
+// "use client";
+// import { useState } from 'react';
+// import convertToSubCurrency from '../lib/ConvertToSubCurrency';
+// import CheckoutPage from '@/app/Stripe/CheckoutPage';
+// import { Elements } from '@stripe/react-stripe-js';
+// import { loadStripe } from '@stripe/stripe-js';
+
+// if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+//     throw new Error('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not defined');
+// }
+
+// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+
+// const Checkout = () => {
+//     const amount = 49.99;
+//     const [customerDetails, setCustomerDetails] = useState({
+//         name: '',
+//         address: '',
+//         phone: '',
+//         zipCode: '',
+//         city: ''
+//     });
+
+//     const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
+//         const { name, value } = e.target;
+//         setCustomerDetails({
+//             ...customerDetails,
+//             [name]: value
+//         });
+//     };
+
+//     const handleSubmit = (e: { preventDefault: () => void; }) => {
+//         e.preventDefault();
+//         // You can handle customer details submission here (e.g., send to your API)
+//         console.log(customerDetails);
+//     };
+
+//     return (
+//         <div>
+//             <h1 className='text-3xl font-bold text-center'>Complete Your Payment</h1>
+
+//             {/* Customer Information Form */}
+//             <form onSubmit={handleSubmit} className="my-4 space-y-4">
+//                 <div>
+//                     <label htmlFor="name" className="block">Name</label>
+//                     <input
+//                         type="text"
+//                         id="name"
+//                         name="name"
+//                         value={customerDetails.name}
+//                         onChange={handleInputChange}
+//                         className="w-full border border-gray-300 p-2 rounded"
+//                         required
+//                     />
+//                 </div>
+//                 <div>
+//                     <label htmlFor="address" className="block">Address</label>
+//                     <input
+//                         type="text"
+//                         id="address"
+//                         name="address"
+//                         value={customerDetails.address}
+//                         onChange={handleInputChange}
+//                         className="w-full border border-gray-300 p-2 rounded"
+//                         required
+//                     />
+//                 </div>
+//                 <div>
+//                     <label htmlFor="phone" className="block">Phone Number</label>
+//                     <input
+//                         type="tel"
+//                         id="phone"
+//                         name="phone"
+//                         value={customerDetails.phone}
+//                         onChange={handleInputChange}
+//                         className="w-full border border-gray-300 p-2 rounded"
+//                         required
+//                     />
+//                 </div>
+//                 <div>
+//                     <label htmlFor="zipCode" className="block">Zip Code</label>
+//                     <input
+//                         type="text"
+//                         id="zipCode"
+//                         name="zipCode"
+//                         value={customerDetails.zipCode}
+//                         onChange={handleInputChange}
+//                         className="w-full border border-gray-300 p-2 rounded"
+//                         required
+//                     />
+//                 </div>
+//                 <div>
+//                     <label htmlFor="city" className="block">City</label>
+//                     <input
+//                         type="text"
+//                         id="city"
+//                         name="city"
+//                         value={customerDetails.city}
+//                         onChange={handleInputChange}
+//                         className="w-full border border-gray-300 p-2 rounded"
+//                         required
+//                     />
+//                 </div>
+//                 <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full">Submit</button>
+//             </form>
+
+//             {/* Stripe Payment Form */}
+//             <Elements
+//                 stripe={stripePromise}
+//                 options={{
+//                     mode: 'payment',
+//                     amount: convertToSubCurrency(amount),
+//                     currency: 'usd'
+//                 }}
+//             >
+//                 <CheckoutPage amount={amount} />
+//             </Elements>
+//         </div>
+//     );
+// };
+
+// export default Checkout;
+
+// "use client";
+// import { useState } from 'react';
+// import convertToSubCurrency from '../lib/ConvertToSubCurrency';
+// import CheckoutPage from '@/app/Stripe/CheckoutPage';
+// import { Elements } from '@stripe/react-stripe-js';
+// import { loadStripe } from '@stripe/stripe-js';
+
+// if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+//     throw new Error('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not defined');
+// }
+
+// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+
+// const Checkout = () => {
+//     const amount = 49.99;
+//     const [customerDetails, setCustomerDetails] = useState({
+//         name: '',
+//         address: '',
+//         phone: '',
+//         zipCode: '',
+//         city: ''
+//     });
+
+//     const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
+//         const { name, value } = e.target;
+//         setCustomerDetails({
+//             ...customerDetails,
+//             [name]: value
+//         });
+//     };
+
+//     const handleSubmit = (e: { preventDefault: () => void; }) => {
+//         e.preventDefault();
+//         // You can handle customer details submission here (e.g., send to your API)
+//         console.log(customerDetails);
+//     };
+
+//     return (
+//         <div className="flex justify-center my-10">
+//             <div className="flex flex-col md:flex-row space-y-10 md:space-y-0 md:space-x-10 w-full max-w-6xl">
+//                 {/* Customer Information Form (Left Side) */}
+//                 <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
+//                     <h2 className="text-2xl font-bold mb-4">Customer Information</h2>
+//                     <form onSubmit={handleSubmit} className="space-y-4">
+//                         <div>
+//                             <label htmlFor="name" className="block">Name</label>
+//                             <input
+//                                 type="text"
+//                                 id="name"
+//                                 name="name"
+//                                 value={customerDetails.name}
+//                                 onChange={handleInputChange}
+//                                 className="w-full border border-gray-300 p-3 rounded"
+//                                 required
+//                             />
+//                         </div>
+//                         <div>
+//                             <label htmlFor="address" className="block">Address</label>
+//                             <input
+//                                 type="text"
+//                                 id="address"
+//                                 name="address"
+//                                 value={customerDetails.address}
+//                                 onChange={handleInputChange}
+//                                 className="w-full border border-gray-300 p-3 rounded"
+//                                 required
+//                             />
+//                         </div>
+//                         <div>
+//                             <label htmlFor="phone" className="block">Phone Number</label>
+//                             <input
+//                                 type="tel"
+//                                 id="phone"
+//                                 name="phone"
+//                                 value={customerDetails.phone}
+//                                 onChange={handleInputChange}
+//                                 className="w-full border border-gray-300 p-3 rounded"
+//                                 required
+//                             />
+//                         </div>
+//                         <div>
+//                             <label htmlFor="zipCode" className="block">Zip Code</label>
+//                             <input
+//                                 type="text"
+//                                 id="zipCode"
+//                                 name="zipCode"
+//                                 value={customerDetails.zipCode}
+//                                 onChange={handleInputChange}
+//                                 className="w-full border border-gray-300 p-3 rounded"
+//                                 required
+//                             />
+//                         </div>
+//                         <div>
+//                             <label htmlFor="city" className="block">City</label>
+//                             <input
+//                                 type="text"
+//                                 id="city"
+//                                 name="city"
+//                                 value={customerDetails.city}
+//                                 onChange={handleInputChange}
+//                                 className="w-full border border-gray-300 p-3 rounded"
+//                                 required
+//                             />
+//                         </div>
+//                         <button type="submit" className="bg-teal-600 text-white p-3 rounded w-full mt-4">Submit</button>
+//                     </form>
+//                 </div>
+
+//                 {/* Stripe Payment Form (Right Side) */}
+//                 <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
+//                     <h2 className="text-2xl font-bold mb-4">Complete Your Payment</h2>
+//                     <Elements
+//                         stripe={stripePromise}
+//                         options={{
+//                             mode: 'payment',
+//                             amount: convertToSubCurrency(amount),
+//                             currency: 'usd'
+//                         }}
+//                     >
+//                         <CheckoutPage amount={amount} />
+//                     </Elements>
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default Checkout;
+
+"use client";
+import { useState } from 'react';
+import convertToSubCurrency from '../lib/ConvertToSubCurrency';
+import CheckoutPage from '@/app/Stripe/CheckoutPage';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+
+if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+    throw new Error('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not defined');
+}
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+
+const Checkout = () => {
+    const amount = 49.99;
+    const [customerDetails, setCustomerDetails] = useState({
+        name: '',
+        address: '',
+        phone: '',
+        zipCode: '',
+        city: ''
+    });
+
+    const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
+        const { name, value } = e.target;
+        setCustomerDetails({
+            ...customerDetails,
+            [name]: value
+        });
     };
 
-    // Store order data in localStorage (or use a backend API to save)
-    localStorage.setItem(orderNumber, JSON.stringify(orderData));
+    const handleSubmit = (e: { preventDefault: () => void; }) => {
+        e.preventDefault();
+        // Save customer details to localStorage
+        const orderNumber = `ORD${Date.now()}`; // Example order number
+        const orderData = {
+            orderNumber,
+            ...customerDetails,
+            paymentStatus: 'Pending', // You can update this after payment
+            products: [
+                { name: 'Sample Product', price: amount, quantity: 1 }
+            ],
+            totalPrice: amount,
+            shipmentTracking: '',
+            shippingMethod: 'Standard',
+            orderNotes: null,
+        };
+        localStorage.setItem(orderNumber, JSON.stringify(orderData));
+        // Redirect to OrderPage with orderNumber
+        window.location.href = `/order?orderNumber=${orderNumber}`;
+    };
 
-    // If online payment is selected, redirect to EasyPaisa
-    if (form.payment === "online") {
-      window.location.href = "https://www.easypaisa.com.pk/"; // Replace with actual EasyPaisa payment URL
-      return;
-    }
+    return (
+        <div className="flex justify-center my-10">
+            <div className="flex flex-col md:flex-row space-y-10 md:space-y-0 md:space-x-10 w-full max-w-6xl">
+                {/* Customer Information Form (Left Side) */}
+                <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
+                    <h2 className="text-2xl font-bold mb-4">Customer Information</h2>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label htmlFor="name" className="block">Name</label>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                value={customerDetails.name}
+                                onChange={handleInputChange}
+                                className="w-full border border-gray-300 p-3 rounded"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="address" className="block">Address</label>
+                            <input
+                                type="text"
+                                id="address"
+                                name="address"
+                                value={customerDetails.address}
+                                onChange={handleInputChange}
+                                className="w-full border border-gray-300 p-3 rounded"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="phone" className="block">Phone Number</label>
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                value={customerDetails.phone}
+                                onChange={handleInputChange}
+                                className="w-full border border-gray-300 p-3 rounded"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="zipCode" className="block">Zip Code</label>
+                            <input
+                                type="text"
+                                id="zipCode"
+                                name="zipCode"
+                                value={customerDetails.zipCode}
+                                onChange={handleInputChange}
+                                className="w-full border border-gray-300 p-3 rounded"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="city" className="block">City</label>
+                            <input
+                                type="text"
+                                id="city"
+                                name="city"
+                                value={customerDetails.city}
+                                onChange={handleInputChange}
+                                className="w-full border border-gray-300 p-3 rounded"
+                                required
+                            />
+                        </div>
+                        <button type="submit" className="bg-teal-600 text-white p-3 rounded w-full mt-4">Submit</button>
+                    </form>
+                </div>
 
-    // Simulate order success and navigate to the order page
-    setOrderSuccess(true);
-    setTimeout(() => {
-      clearCart(); // Clear the cart
-      router.push(`/order?orderNumber=${orderNumber}`); // Redirect to the order details page
-    }, 2000);
-  };
-
-  return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h2 className="text-3xl font-bold text-center mb-6 text-indigo-900">
-        Checkout
-      </h2>
-
-      <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
-        <form className="space-y-4">
-          <input
-            type="text"
-            name="name"
-            placeholder="First and Last Name"
-            className="border p-3 rounded-lg w-full"
-            value={form.name}
-            onChange={handleInputChange}
-          />
-          <input
-            type="text"
-            name="address"
-            placeholder="Address"
-            className="border p-3 rounded-lg w-full"
-            value={form.address}
-            onChange={handleInputChange}
-          />
-          <input
-            type="text"
-            name="country"
-            placeholder="Country"
-            className="border p-3 rounded-lg w-full"
-            value={form.country}
-            onChange={handleInputChange}
-          />
-          <input
-            type="text"
-            name="city"
-            placeholder="City"
-            className="border p-3 rounded-lg w-full"
-            value={form.city}
-            onChange={handleInputChange}
-          />
-          <input
-            type="text"
-            name="zip"
-            placeholder="ZIP Code"
-            className="border p-3 rounded-lg w-full"
-            value={form.zip}
-            onChange={handleInputChange}
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email Address"
-            className="border p-3 rounded-lg w-full"
-            value={form.email}
-            onChange={handleInputChange}
-          />
-          <input
-            type="text"
-            name="phone"
-            placeholder="Phone Number"
-            className="border p-3 rounded-lg w-full"
-            value={form.phone}
-            onChange={handleInputChange}
-          />
-          <select
-            name="shippingMethod"
-            onChange={handleInputChange}
-            className="border p-3 rounded-lg w-full"
-            value={form.shippingMethod}
-          >
-            <option value="">Select Shipping Method</option>
-            <option value="standard">Standard Shipping</option>
-            <option value="express">Express Shipping</option>
-            <option value="overnight">Overnight Shipping</option>
-          </select>
-          <textarea
-            name="orderNotes"
-            placeholder="Order Notes (Optional)"
-            className="border p-3 rounded-lg w-full"
-            value={form.orderNotes}
-            onChange={handleInputChange}
-          />
-          <select
-            name="payment"
-            onChange={handleInputChange}
-            className="border p-3 rounded-lg w-full"
-            value={form.payment}
-          >
-            <option value="">Select Payment Method</option>
-            <option value="cod">Cash on Delivery</option>
-            <option value="online">Online Payment</option>
-          </select>
-        </form>
-
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-
-        <button
-          type="button"
-          onClick={handleOrder}
-          className="mt-6 bg-teal-500 text-white py-3 px-6 rounded-lg w-full hover:bg-teal-600"
-        >
-          Finalize Order
-        </button>
-      </div>
-
-      {orderSuccess && (
-        <div className="mt-6 text-center">
-          <div className="flex flex-col items-center">
-            <Image
-              src="/favicon.ico"
-              height={40}
-              width={40}
-              alt="Comforty Logo"
-              className="w-20 h-20 mb-4"
-            />
-            <p className="text-teal-600 font-bold text-lg">
-              Thank you for your order! Comforty has successfully placed your
-              order.
-            </p>
-            <p className="text-gray-600 mt-2">
-              Redirecting to your order details...
-            </p>
-          </div>
+                {/* Stripe Payment Form (Right Side) */}
+                <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
+                    <h2 className="text-2xl font-bold mb-4">Complete Your Payment</h2>
+                    <Elements
+                        stripe={stripePromise}
+                        options={{
+                            mode: 'payment',
+                            amount: convertToSubCurrency(amount),
+                            currency: 'usd'
+                        }}
+                    >
+                        <CheckoutPage amount={amount} />
+                    </Elements>
+                </div>
+            </div>
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
-export default CheckoutPage;
+export default Checkout;
+
+
+
+
+
+// 'use client';
+
+// import Image from "next/image";
+// import React, { useState } from "react";
+// import { useCart } from "../context/cartContext";
+// import { useRouter } from "next/navigation";
+// import { v4 as uuidv4 } from "uuid"; // For generating unique order IDs
+
+// const CheckoutPage: React.FC = () => {
+//   const { cart, clearCart } = useCart();
+//   const [form, setForm] = useState({
+//     name: "",
+//     address: "",
+//     country: "",
+//     city: "",
+//     zip: "",
+//     email: "",
+//     phone: "",
+//     payment: "",
+//     shippingMethod: "",
+//     orderNotes: "",
+//   });
+//   const [error, setError] = useState("");
+//   const [orderSuccess, setOrderSuccess] = useState(false);
+//   const router = useRouter();
+
+//   const handleInputChange = (
+//     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+//   ) => {
+//     setForm({ ...form, [e.target.name]: e.target.value });
+//   };
+
+//   const handleOrder = async () => {
+//     // Validate form
+//     if (
+//       !form.name ||
+//       !form.address ||
+//       !form.country ||
+//       !form.city ||
+//       !form.zip ||
+//       !form.email ||
+//       !form.phone ||
+//       !form.payment ||
+//       !form.shippingMethod
+//     ) {
+//       setError("Please fill in all the fields.");
+//       return;
+//     }
+
+//     if (cart.length === 0) {
+//       setError("Your cart is empty.");
+//       return;
+//     }
+
+//     setError("");
+
+//     // Create a unique order number using UUID
+//     const orderNumber = uuidv4();
+
+//     // Calculate total price
+//     const totalPrice = cart.reduce(
+//       (total, item) => total + item.price * item.quantity,
+//       0
+//     );
+
+//     // If online payment is selected, redirect to Stripe
+//     if (form.payment === "online") {
+//       try {
+//         // Call your backend to create a payment intent
+//         const response = await fetch('/api/payment-intent/route.ts', {
+//           method: 'POST',
+//           headers: { 'Content-Type': 'application/json' },
+//           body: JSON.stringify({ amount: totalPrice * 100 }), // Amount in subunits
+//         });
+
+//         const data = await response.json();
+//         if (data.clientSecret) {
+//           // Redirect to Stripe Payment Page
+//           router.push(`/Stripe/StripePayment?clientSecret=${data.clientSecret}&amount=${totalPrice}`);
+//         } else {
+//           setError("Failed to initialize payment. Please try again.");
+//         }
+//       } catch (err) {
+//         setError("An error occurred while processing your payment.");
+//       }
+//       return;
+//     }
+
+//     // Store order details locally or send to backend for COD
+//     const orderData = {
+//       orderNumber,
+//       name: form.name,
+//       address: form.address,
+//       email: form.email,
+//       phone: form.phone,
+//       paymentStatus: "COD",
+//       shippingMethod: form.shippingMethod,
+//       orderNotes: form.orderNotes,
+//       products: cart,
+//       totalPrice,
+//       shipmentTracking:
+//         form.shippingMethod === "express" ? "Tracking12345" : "N/A",
+//     };
+
+//     localStorage.setItem(orderNumber, JSON.stringify(orderData));
+
+//     // Simulate order success and navigate to the order page
+//     setOrderSuccess(true);
+//     setTimeout(() => {
+//       clearCart(); // Clear the cart
+//       router.push(`/order?orderNumber=${orderNumber}`); // Redirect to the order details page
+//     }, 2000);
+//   };
+
+//   return (
+//     <div className="p-6 max-w-4xl mx-auto">
+//       <h2 className="text-3xl font-bold text-center mb-6 text-indigo-900">
+//         Checkout
+//       </h2>
+
+//       <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
+//         <form className="space-y-4">
+//           <input
+//             type="text"
+//             name="name"
+//             placeholder="First and Last Name"
+//             className="border p-3 rounded-lg w-full"
+//             value={form.name}
+//             onChange={handleInputChange}
+//           />
+//           <input
+//             type="text"
+//             name="address"
+//             placeholder="Address"
+//             className="border p-3 rounded-lg w-full"
+//             value={form.address}
+//             onChange={handleInputChange}
+//           />
+//           <input
+//             type="text"
+//             name="country"
+//             placeholder="Country"
+//             className="border p-3 rounded-lg w-full"
+//             value={form.country}
+//             onChange={handleInputChange}
+//           />
+//           <input
+//             type="text"
+//             name="city"
+//             placeholder="City"
+//             className="border p-3 rounded-lg w-full"
+//             value={form.city}
+//             onChange={handleInputChange}
+//           />
+//           <input
+//             type="text"
+//             name="zip"
+//             placeholder="ZIP Code"
+//             className="border p-3 rounded-lg w-full"
+//             value={form.zip}
+//             onChange={handleInputChange}
+//           />
+//           <input
+//             type="email"
+//             name="email"
+//             placeholder="Email Address"
+//             className="border p-3 rounded-lg w-full"
+//             value={form.email}
+//             onChange={handleInputChange}
+//           />
+//           <input
+//             type="text"
+//             name="phone"
+//             placeholder="Phone Number"
+//             className="border p-3 rounded-lg w-full"
+//             value={form.phone}
+//             onChange={handleInputChange}
+//           />
+//           <select
+//             name="shippingMethod"
+//             onChange={handleInputChange}
+//             className="border p-3 rounded-lg w-full"
+//             value={form.shippingMethod}
+//           >
+//             <option value="">Select Shipping Method</option>
+//             <option value="standard">Standard Shipping</option>
+//             <option value="express">Express Shipping</option>
+//             <option value="overnight">Overnight Shipping</option>
+//           </select>
+//           <textarea
+//             name="orderNotes"
+//             placeholder="Order Notes (Optional)"
+//             className="border p-3 rounded-lg w-full"
+//             value={form.orderNotes}
+//             onChange={handleInputChange}
+//           />
+//           <select
+//             name="payment"
+//             onChange={handleInputChange}
+//             className="border p-3 rounded-lg w-full"
+//             value={form.payment}
+//           >
+//             <option value="">Select Payment Method</option>
+//             <option value="cod">Cash on Delivery</option>
+//             <option value="online">Online Payment</option>
+//           </select>
+//         </form>
+
+//         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
+//         <button
+//           type="button"
+//           onClick={handleOrder}
+//           className="mt-6 bg-teal-500 text-white py-3 px-6 rounded-lg w-full hover:bg-teal-600"
+//         >
+//           Finalize Order
+//         </button>
+//       </div>
+
+//       {orderSuccess && (
+//         <div className="mt-6 text-center">
+//           <div className="flex flex-col items-center">
+//             <Image
+//               src="/favicon.ico"
+//               height={40}
+//               width={40}
+//               alt="Comforty Logo"
+//               className="w-20 h-20 mb-4"
+//             />
+//             <p className="text-teal-600 font-bold text-lg">
+//               Thank you for your order! Comforty has successfully placed your
+//               order.
+//             </p>
+//             <p className="text-gray-600 mt-2">
+//               Redirecting to your order details...
+//             </p>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default CheckoutPage;
+
+// "use client";
+
+// import React, { useState } from "react";
+// import { useCart } from "../context/cartContext";
+// import { useRouter } from "next/navigation";
+// import { v4 as uuidv4 } from "uuid";
+
+// const CheckoutPage: React.FC = () => {
+//   const { cart, clearCart } = useCart();
+//   const [form, setForm] = useState({
+//     name: "",
+//     address: "",
+//     country: "",
+//     city: "",
+//     zip: "",
+//     email: "",
+//     phone: "",
+//     payment: "",
+//     shippingMethod: "",
+//     orderNotes: "",
+//   });
+//   const [error, setError] = useState("");
+//   const [orderSuccess, setOrderSuccess] = useState(false);
+//   const router = useRouter();
+
+//   const handleInputChange = (
+//     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+//   ) => {
+//     setForm({ ...form, [e.target.name]: e.target.value });
+//   };
+
+//   const handleOrder = async () => {
+//     // Validate form
+//     if (
+//       !form.name ||
+//       !form.address ||
+//       !form.country ||
+//       !form.city ||
+//       !form.zip ||
+//       !form.email ||
+//       !form.phone ||
+//       !form.payment ||
+//       !form.shippingMethod
+//     ) {
+//       setError("Please fill in all the fields.");
+//       return;
+//     }
+
+//     if (cart.length === 0) {
+//       setError("Your cart is empty.");
+//       return;
+//     }
+
+//     setError("");
+
+//     // Generate a unique order number
+//     const orderNumber = uuidv4();
+
+//     // Calculate total price
+//     const totalPrice = cart.reduce(
+//       (total, item) => total + item.price * item.quantity,
+//       0
+//     );
+
+//     // If online payment is selected, redirect to JazzCash
+//     if (form.payment === "online") {
+//       try {
+//         const response = await fetch("/api/jazzcash", {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify({ amount: totalPrice, orderId: orderNumber }),
+//         });
+
+//         const data = await response.json();
+//         console.log("JazzCash API Response:", data); // Log the response for debugging
+
+//         if (data.paymentUrl) {
+//           window.location.href = data.paymentUrl; // Redirect to payment gateway
+//         } else {
+//           setError("Failed to initiate payment. Please try again.");
+//         }
+//       } catch (err) {
+//         console.error("Payment Error:", err); // Log the error for debugging
+//         setError("An error occurred while processing your payment.");
+//       }
+//       return;
+//     }
+
+//     // Store order details in localStorage (or send to backend)
+//     const orderData = {
+//       orderNumber,
+//       name: form.name,
+//       address: form.address,
+//       email: form.email,
+//       phone: form.phone,
+//       paymentStatus: form.payment === "online" ? "Pending" : "COD",
+//       shippingMethod: form.shippingMethod,
+//       orderNotes: form.orderNotes,
+//       products: cart,
+//       totalPrice,
+//       shipmentTracking:
+//         form.shippingMethod === "express" ? "Tracking12345" : "N/A",
+//     };
+
+//     localStorage.setItem(orderNumber, JSON.stringify(orderData));
+
+//     // Simulate order success
+//     setOrderSuccess(true);
+//     setTimeout(() => {
+//       clearCart();
+//       router.push(`/order?orderNumber=${orderNumber}`);
+//     }, 2000);
+//   };
+
+//   return (
+//     <div className="p-6 max-w-4xl mx-auto">
+//       <h2 className="text-3xl font-bold text-center mb-6 text-indigo-900">
+//         Checkout
+//       </h2>
+
+//       <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
+//         <form className="space-y-4">
+//           <input
+//             type="text"
+//             name="name"
+//             placeholder="First and Last Name"
+//             className="border p-3 rounded-lg w-full"
+//             value={form.name}
+//             onChange={handleInputChange}
+//           />
+//           <input
+//             type="text"
+//             name="address"
+//             placeholder="Address"
+//             className="border p-3 rounded-lg w-full"
+//             value={form.address}
+//             onChange={handleInputChange}
+//           />
+//           <input
+//             type="text"
+//             name="country"
+//             placeholder="Country"
+//             className="border p-3 rounded-lg w-full"
+//             value={form.country}
+//             onChange={handleInputChange}
+//           />
+//           <input
+//             type="text"
+//             name="city"
+//             placeholder="City"
+//             className="border p-3 rounded-lg w-full"
+//             value={form.city}
+//             onChange={handleInputChange}
+//           />
+//           <input
+//             type="text"
+//             name="zip"
+//             placeholder="ZIP Code"
+//             className="border p-3 rounded-lg w-full"
+//             value={form.zip}
+//             onChange={handleInputChange}
+//           />
+//           <input
+//             type="email"
+//             name="email"
+//             placeholder="Email Address"
+//             className="border p-3 rounded-lg w-full"
+//             value={form.email}
+//             onChange={handleInputChange}
+//           />
+//           <input
+//             type="text"
+//             name="phone"
+//             placeholder="Phone Number"
+//             className="border p-3 rounded-lg w-full"
+//             value={form.phone}
+//             onChange={handleInputChange}
+//           />
+//           <select
+//             name="shippingMethod"
+//             onChange={handleInputChange}
+//             className="border p-3 rounded-lg w-full"
+//             value={form.shippingMethod}
+//           >
+//             <option value="">Select Shipping Method</option>
+//             <option value="standard">Standard Shipping</option>
+//             <option value="express">Express Shipping</option>
+//             <option value="overnight">Overnight Shipping</option>
+//           </select>
+//           <textarea
+//             name="orderNotes"
+//             placeholder="Order Notes (Optional)"
+//             className="border p-3 rounded-lg w-full"
+//             value={form.orderNotes}
+//             onChange={handleInputChange}
+//           />
+//           <select
+//             name="payment"
+//             onChange={handleInputChange}
+//             className="border p-3 rounded-lg w-full"
+//             value={form.payment}
+//           >
+//             <option value="">Select Payment Method</option>
+//             <option value="cod">Cash on Delivery</option>
+//             <option value="online">Online Payment (JazzCash)</option>
+//           </select>
+//         </form>
+
+//         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
+//         <button
+//           type="button"
+//           onClick={handleOrder}
+//           className="mt-6 bg-teal-500 text-white py-3 px-6 rounded-lg w-full hover:bg-teal-600"
+//         >
+//           Finalize Order
+//         </button>
+//       </div>
+
+//       {orderSuccess && (
+//         <div className="mt-6 text-center">
+//           <p className="text-teal-600 font-bold text-lg">
+//             Thank you for your order! Your order has been successfully placed.
+//           </p>
+//           <p className="text-gray-600 mt-2">
+//             Redirecting to your order details...
+//           </p>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default CheckoutPage;
