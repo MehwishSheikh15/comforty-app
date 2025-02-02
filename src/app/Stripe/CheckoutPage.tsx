@@ -80,3 +80,61 @@ const CheckoutPage = ({ amount }: { amount: number }) => {
 }
 
 export default CheckoutPage
+// const CheckoutPage = ({ amount, onPaymentSuccess }: { amount: number, onPaymentSuccess: () => void }) => {
+//     const stripe = useStripe();
+//     const elements = useElements();
+
+//     const [errorMessage, setError] = useState<string>();
+//     const [clientSecret, setClientSecret] = useState('');
+//     const [loading, setLoading] = useState(false);
+
+//     useEffect(() => {
+//         fetch('/api/payment-intent', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json'
+//             },
+//             body: JSON.stringify({ amount: convertToSubCurrency(amount) })
+//         })
+//             .then(res => res.json())
+//             .then(data => setClientSecret(data.clientSecret));
+//     }, [amount]);
+
+//     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+//         e.preventDefault();
+//         setLoading(true);
+
+//         if (!stripe || !elements) {
+//             return;
+//         }
+
+//         const { error } = await stripe.confirmPayment({
+//             elements,
+//             clientSecret,
+//             confirmParams: {
+//                 return_url: `${window.location.origin}/payment-success`
+//             }
+//         });
+
+//         if (error) {
+//             setError(error.message);
+//             setLoading(false);
+//         } else {
+//             setError('');
+//             onPaymentSuccess();  // Call the function to show order details after payment
+//             setLoading(false);
+//         }
+//     };
+
+//     return (
+//         <form onSubmit={handleSubmit} className="p-8">
+//             {clientSecret && <PaymentElement />}
+//             <button className="w-full bg-teal-600 text-white py-2 mt-5">
+//                 {loading ? "Processing..." : "Pay Now"}
+//             </button>
+//             {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
+//         </form>
+//     );
+// };
+
+// export default CheckoutPage;

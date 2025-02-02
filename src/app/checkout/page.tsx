@@ -271,124 +271,870 @@
 
 // export default Checkout;
 // "use client";
-// import { useState } from 'react';
-// import convertToSubCurrency from '../lib/ConvertToSubCurrency';
-// import CheckoutPage from '@/app/Stripe/CheckoutPage';
-// import { Elements } from '@stripe/react-stripe-js';
-// import { loadStripe } from '@stripe/stripe-js';
+// import { useState, useEffect } from "react";
+// import convertToSubCurrency from "../lib/ConvertToSubCurrency";
+// import CheckoutPage from "@/app/Stripe/CheckoutPage";
+// import { Elements } from "@stripe/react-stripe-js";
+// import { loadStripe } from "@stripe/stripe-js";
+// import jsPDF from "jspdf";
 
-// if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
-//     throw new Error('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not defined');
+// // Load Stripe
+// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "");
+
+// // TypeScript Interfaces
+// interface Product {
+//   id: string;
+//   name: string;
+//   price: number;
+//   quantity: number;
 // }
 
-// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+// interface OrderDetails {
+//   orderNumber: string;
+//   name: string;
+//   address: string;
+//   phone: string;
+//   zipCode: string;
+//   city: string;
+//   paymentStatus: string;
+//   products: Product[];
+//   totalPrice: number;
+//   shipmentTracking: string;
+//   shippingMethod: string;
+//   orderNotes: string | null;
+// }
 
 // const Checkout = () => {
-//     const amount = 49.99;
-//     const [customerDetails, setCustomerDetails] = useState({
-//         name: '',
-//         address: '',
-//         phone: '',
-//         zipCode: '',
-//         city: ''
+//   const [cartProducts, setCartProducts] = useState<Product[]>([]);
+//   const [customerDetails, setCustomerDetails] = useState({
+//     name: "",
+//     address: "",
+//     phone: "",
+//     zipCode: "",
+//     city: "",
+//   });
+
+//   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
+//   const [isPaid, setIsPaid] = useState(false);
+//   const [detailsSaved, setDetailsSaved] = useState(false);
+
+//   // Simulate fetching cart products
+//   useEffect(() => {
+//     const cartData = [
+//       { id: "prod_001", name: "Sample Product 1", price: 49.99, quantity: 1 },
+//       { id: "prod_002", name: "Sample Product 2", price: 29.99, quantity: 2 },
+//     ];
+//     setCartProducts(cartData);
+//   }, []);
+
+//   // Calculate total price dynamically
+//   const totalPrice = cartProducts.reduce((total, product) => total + product.price * product.quantity, 0);
+
+//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const { name, value } = e.target;
+//     setCustomerDetails({
+//       ...customerDetails,
+//       [name]: value,
+//     });
+//   };
+
+//   // Save customer details
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setDetailsSaved(true);
+//   };
+
+//   // Handle successful payment
+//   const handlePaymentSuccess = () => {
+//     const orderNumber = `ORD${Date.now()}`;
+//     const orderData: OrderDetails = {
+//       orderNumber,
+//       ...customerDetails,
+//       paymentStatus: "Paid",
+//       products: cartProducts,
+//       totalPrice,
+//       shipmentTracking: "Pending",
+//       shippingMethod: "Standard",
+//       orderNotes: "Thank you for your purchase!",
+//     };
+
+//     localStorage.setItem(orderNumber, JSON.stringify(orderData));
+//     setOrderDetails(orderData);
+//     setIsPaid(true);
+//   };
+
+//   // Download Invoice (PDF)
+//   const downloadPDF = () => {
+//     if (!orderDetails) return;
+
+//     const doc = new jsPDF();
+//     doc.text("Order Invoice", 20, 20);
+//     doc.text(`Order Number: ${orderDetails.orderNumber}`, 20, 30);
+//     doc.text(`Customer Name: ${orderDetails.name}`, 20, 40);
+//     doc.text(`Address: ${orderDetails.address}`, 20, 50);
+//     doc.text(`Phone: ${orderDetails.phone}`, 20, 60);
+//     doc.text(`Zip Code: ${orderDetails.zipCode}`, 20, 70);
+//     doc.text(`City: ${orderDetails.city}`, 20, 80);
+//     doc.text(`Total Price: $${orderDetails.totalPrice.toFixed(2)}`, 20, 90);
+//     doc.text(`Payment Status: ${orderDetails.paymentStatus}`, 20, 100);
+//     doc.text(`Shipping Method: ${orderDetails.shippingMethod}`, 20, 110);
+//     doc.text(`Order Notes: ${orderDetails.orderNotes || "N/A"}`, 20, 120);
+//     doc.text("Products:", 20, 130);
+
+//     orderDetails.products.forEach((product, index) => {
+//       doc.text(
+//         `${index + 1}. ${product.name} - $${product.price.toFixed(2)} x ${product.quantity}`,
+//         20,
+//         140 + index * 10
+//       );
 //     });
 
-//     const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
-//         const { name, value } = e.target;
-//         setCustomerDetails({
-//             ...customerDetails,
-//             [name]: value
-//         });
-//     };
+//     doc.save(`Order_${orderDetails.orderNumber}.pdf`);
+//   };
 
-//     const handleSubmit = (e: { preventDefault: () => void; }) => {
-//         e.preventDefault();
-//         // You can handle customer details submission here (e.g., send to your API)
-//         console.log(customerDetails);
-//     };
-
-//     return (
-//         <div>
-//             <h1 className='text-3xl font-bold text-center'>Complete Your Payment</h1>
-
+//   return (
+//     <div className="flex justify-center my-10">
+//       <div className="flex flex-col md:flex-row space-y-10 md:space-y-0 md:space-x-10 w-full max-w-6xl">
+//         {!isPaid ? (
+//           <>
 //             {/* Customer Information Form */}
-//             <form onSubmit={handleSubmit} className="my-4 space-y-4">
-//                 <div>
-//                     <label htmlFor="name" className="block">Name</label>
+//             <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
+//               <h2 className="text-2xl font-bold mb-4">Customer Information</h2>
+//               <form onSubmit={handleSubmit} className="space-y-4">
+//                 {["name", "address", "phone", "zipCode", "city"].map((field) => (
+//                   <div key={field}>
+//                     <label htmlFor={field} className="block capitalize">
+//                       {field}
+//                     </label>
 //                     <input
-//                         type="text"
-//                         id="name"
-//                         name="name"
-//                         value={customerDetails.name}
-//                         onChange={handleInputChange}
-//                         className="w-full border border-gray-300 p-2 rounded"
-//                         required
+//                       type="text"
+//                       id={field}
+//                       name={field}
+//                       value={customerDetails[field as keyof typeof customerDetails]}
+//                       onChange={handleInputChange}
+//                       className="w-full border border-gray-300 p-3 rounded"
+//                       required
 //                     />
-//                 </div>
-//                 <div>
-//                     <label htmlFor="address" className="block">Address</label>
-//                     <input
-//                         type="text"
-//                         id="address"
-//                         name="address"
-//                         value={customerDetails.address}
-//                         onChange={handleInputChange}
-//                         className="w-full border border-gray-300 p-2 rounded"
-//                         required
-//                     />
-//                 </div>
-//                 <div>
-//                     <label htmlFor="phone" className="block">Phone Number</label>
-//                     <input
-//                         type="tel"
-//                         id="phone"
-//                         name="phone"
-//                         value={customerDetails.phone}
-//                         onChange={handleInputChange}
-//                         className="w-full border border-gray-300 p-2 rounded"
-//                         required
-//                     />
-//                 </div>
-//                 <div>
-//                     <label htmlFor="zipCode" className="block">Zip Code</label>
-//                     <input
-//                         type="text"
-//                         id="zipCode"
-//                         name="zipCode"
-//                         value={customerDetails.zipCode}
-//                         onChange={handleInputChange}
-//                         className="w-full border border-gray-300 p-2 rounded"
-//                         required
-//                     />
-//                 </div>
-//                 <div>
-//                     <label htmlFor="city" className="block">City</label>
-//                     <input
-//                         type="text"
-//                         id="city"
-//                         name="city"
-//                         value={customerDetails.city}
-//                         onChange={handleInputChange}
-//                         className="w-full border border-gray-300 p-2 rounded"
-//                         required
-//                     />
-//                 </div>
-//                 <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full">Submit</button>
-//             </form>
+//                   </div>
+//                 ))}
+//                 <button
+//                   type="submit"
+//                   className="bg-teal-600 text-white p-3 rounded w-full mt-4"
+//                 >
+//                   Submit Details
+//                 </button>
+//               </form>
+
+//               {detailsSaved && (
+//                 <p className="text-green-600 mt-4 font-bold flex items-center">
+//                   ✅ Your details have been saved!
+//                 </p>
+//               )}
+//             </div>
 
 //             {/* Stripe Payment Form */}
-//             <Elements
+//             <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
+//               <h2 className="text-2xl font-bold mb-4">Complete Your Payment</h2>
+//               <Elements
 //                 stripe={stripePromise}
 //                 options={{
-//                     mode: 'payment',
-//                     amount: convertToSubCurrency(amount),
-//                     currency: 'usd'
+//                   mode: "payment",
+//                   amount: convertToSubCurrency(totalPrice > 0 ? totalPrice : 1),
+//                   currency: "usd",
 //                 }}
+//               >
+//                 {totalPrice > 0 ? (
+//                   <CheckoutPage amount={totalPrice}  />
+//                 ) : (
+//                   <p className="text-red-500">Your cart is empty. Add products to continue.</p>
+//                 )}
+//               </Elements>
+//             </div>
+//           </>
+//         ) : (
+//           <div className="flex-1 bg-white p-6 rounded-lg shadow-lg text-center">
+//             <h2 className="text-2xl font-bold mb-4 text-teal-600">
+//               🎉 Thank You for Your Purchase!
+//             </h2>
+//             <p className="mb-4">Your order details:</p>
+//             <div className="text-left border p-4 rounded-lg">
+//               <p><strong>Order Number:</strong> {orderDetails?.orderNumber}</p>
+//               <p><strong>Total Price:</strong> ${orderDetails?.totalPrice.toFixed(2)}</p>
+//               <p><strong>Payment Status:</strong> {orderDetails?.paymentStatus}</p>
+//               <p className="font-bold">Products:</p>
+//               {orderDetails?.products.map((product, index) => (
+//                 <p key={index}>
+//                   {index + 1}. {product.name} - ${product.price.toFixed(2)} x {product.quantity}
+//                 </p>
+//               ))}
+//             </div>
+//             <button
+//               onClick={downloadPDF}
+//               className="bg-teal-600 text-white p-3 rounded mt-4"
 //             >
-//                 <CheckoutPage amount={amount} />
-//             </Elements>
-//         </div>
-//     );
+//               📄 Download Invoice
+//             </button>
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Checkout;
+"use client";
+import { useState, useEffect } from "react";
+import convertToSubCurrency from "../lib/ConvertToSubCurrency";
+import CheckoutPage from "@/app/Stripe/CheckoutPage";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import jsPDF from "jspdf";
+
+// TypeScript Interfaces
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+interface OrderDetails {
+  orderNumber: string;
+  name: string;
+  address: string;
+  phone: string;
+  zipCode: string;
+  city: string;
+  paymentStatus: string;
+  products: Product[];
+  totalPrice: number;
+  shipmentTracking: string;
+  shippingMethod: string;
+  orderNotes: string | null;
+}
+
+interface CheckoutProps {
+  router: any; // Add router prop type if necessary
+}
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "");
+
+const Checkout = ({ router }: CheckoutProps) => {
+  const [cartProducts, setCartProducts] = useState<Product[]>([]);
+  const [customerDetails, setCustomerDetails] = useState({
+    name: "",
+    address: "",
+    phone: "",
+    zipCode: "",
+    city: "",
+  });
+
+  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
+  const [isPaid, setIsPaid] = useState(false);
+  const [detailsSaved, setDetailsSaved] = useState(false);
+  const [showOrderDetails, setShowOrderDetails] = useState(false);
+
+  // Simulate fetching cart products
+  useEffect(() => {
+    const cartData = [
+      { id: "prod_001", name: "Sample Product 1", price: 49.99, quantity: 1 },
+      { id: "prod_002", name: "Sample Product 2", price: 29.99, quantity: 2 },
+    ];
+    setCartProducts(cartData);
+  }, []);
+
+  const totalPrice = cartProducts.reduce((total, product) => total + product.price * product.quantity, 0);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setCustomerDetails({
+      ...customerDetails,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setDetailsSaved(true);
+  };
+
+  const handlePaymentSuccess = () => {
+    const orderNumber = `ORD${Date.now()}`;
+    const orderData: OrderDetails = {
+      orderNumber,
+      ...customerDetails,
+      paymentStatus: "Paid",
+      products: cartProducts,
+      totalPrice,
+      shipmentTracking: "Pending",
+      shippingMethod: "Standard",
+      orderNotes: "Thank you for your purchase!",
+    };
+
+    localStorage.setItem(orderNumber, JSON.stringify(orderData));
+    setOrderDetails(orderData);
+    setIsPaid(true);
+    setShowOrderDetails(true);
+  };
+
+  const downloadPDF = () => {
+    if (!orderDetails) return;
+
+    const doc = new jsPDF();
+    doc.text("Order Invoice", 20, 20);
+    doc.text(`Order Number: ${orderDetails.orderNumber}`, 20, 30);
+    doc.text(`Customer Name: ${orderDetails.name}`, 20, 40);
+    doc.text(`Address: ${orderDetails.address}`, 20, 50);
+    doc.text(`Phone: ${orderDetails.phone}`, 20, 60);
+    doc.text(`Zip Code: ${orderDetails.zipCode}`, 20, 70);
+    doc.text(`City: ${orderDetails.city}`, 20, 80);
+    doc.text(`Total Price: $${orderDetails.totalPrice.toFixed(2)}`, 20, 90);
+    doc.text(`Payment Status: ${orderDetails.paymentStatus}`, 20, 100);
+    doc.text(`Shipping Method: ${orderDetails.shippingMethod}`, 20, 110);
+    doc.text(`Order Notes: ${orderDetails.orderNotes || "N/A"}`, 20, 120);
+    doc.text("Products:", 20, 130);
+
+    orderDetails.products.forEach((product, index) => {
+      doc.text(
+        `${index + 1}. ${product.name} - $${product.price.toFixed(2)} x ${product.quantity}`,
+        20,
+        140 + index * 10
+      );
+    });
+
+    doc.save(`Order_${orderDetails.orderNumber}.pdf`);
+  };
+
+  const handleCloseOrderDetails = () => {
+    setShowOrderDetails(false);
+    router.push("/payment-success"); // Navigate to payment success page
+  };
+
+  return (
+    <div className="flex justify-center my-10">
+      <div className="flex flex-col md:flex-row space-y-10 md:space-y-0 md:space-x-10 w-full max-w-6xl">
+        {!isPaid ? (
+          <>
+            {/* Customer Information Form */}
+            <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
+              <h2 className="text-2xl font-bold mb-4">Customer Information</h2>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {["name", "address", "phone", "zipCode", "city"].map((field) => (
+                  <div key={field}>
+                    <label htmlFor={field} className="block capitalize">
+                      {field}
+                    </label>
+                    <input
+                      type="text"
+                      id={field}
+                      name={field}
+                      value={customerDetails[field as keyof typeof customerDetails]}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 p-3 rounded"
+                      required
+                    />
+                  </div>
+                ))}
+                <button
+                  type="submit"
+                  className="bg-teal-600 text-white p-3 rounded w-full mt-4"
+                >
+                  Submit Details
+                </button>
+              </form>
+
+              {detailsSaved && (
+                <p className="text-green-600 mt-4 font-bold flex items-center">
+                  ✅ Your details have been saved!
+                </p>
+              )}
+            </div>
+
+            {/* Stripe Payment Form */}
+            <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
+              <h2 className="text-2xl font-bold mb-4">Complete Your Payment</h2>
+              <Elements
+                stripe={stripePromise}
+                options={{
+                  mode: "payment",
+                  amount: convertToSubCurrency(totalPrice > 0 ? totalPrice : 1),
+                  currency: "usd",
+                }}
+              >
+                {totalPrice > 0 ? (
+                  <CheckoutPage amount={totalPrice} />
+                ) : (
+                  <p className="text-red-500">Your cart is empty. Add products to continue.</p>
+                )}
+              </Elements>
+            </div>
+          </>
+        ) : (
+          <>
+            {showOrderDetails && (
+              <div className="flex-1 bg-white p-6 rounded-lg shadow-lg text-center">
+                <button
+                  onClick={handleCloseOrderDetails}
+                  className="absolute top-2 right-2 text-xl font-bold"
+                >
+                  ✖
+                </button>
+                <h2 className="text-2xl font-bold mb-4 text-teal-600">
+                  🎉 Thank You for Your Purchase!
+                </h2>
+                <p className="mb-4">Your order details:</p>
+                <div className="text-left border p-4 rounded-lg">
+                  <p><strong>Order Number:</strong> {orderDetails?.orderNumber}</p>
+                  <p><strong>Total Price:</strong> ${orderDetails?.totalPrice.toFixed(2)}</p>
+                  <p><strong>Payment Status:</strong> {orderDetails?.paymentStatus}</p>
+                  <p className="font-bold">Products:</p>
+                  {orderDetails?.products.map((product, index) => (
+                    <p key={index}>
+                      {index + 1}. {product.name} - ${product.price.toFixed(2)} x {product.quantity}
+                    </p>
+                  ))}
+                </div>
+                <button
+                  onClick={downloadPDF}
+                  className="bg-teal-600 text-white p-3 rounded mt-4"
+                >
+                  📄 Download Invoice
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Checkout;
+
+// Checkout.tsx
+// "use client";
+// import { useState, useEffect } from "react";
+// import convertToSubCurrency from "../lib/ConvertToSubCurrency";
+// import CheckoutPage from "@/app/Stripe/CheckoutPage";
+// import { Elements } from "@stripe/react-stripe-js";
+// import { loadStripe } from "@stripe/stripe-js";
+// import jsPDF from "jspdf";
+
+// // Load Stripe
+// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "");
+
+// // TypeScript Interfaces
+// interface Product {
+//   id: string;
+//   name: string;
+//   price: number;
+//   quantity: number;
+// }
+
+// interface OrderDetails {
+//   orderNumber: string;
+//   name: string;
+//   address: string;
+//   phone: string;
+//   zipCode: string;
+//   city: string;
+//   paymentStatus: string;
+//   products: Product[];
+//   totalPrice: number;
+//   shipmentTracking: string;
+//   shippingMethod: string;
+//   orderNotes: string | null;
+// }
+
+// const Checkout = () => {
+//   const [cartProducts, setCartProducts] = useState<Product[]>([]);
+//   const [customerDetails, setCustomerDetails] = useState({
+//     name: "",
+//     address: "",
+//     phone: "",
+//     zipCode: "",
+//     city: "",
+//   });
+
+//   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
+//   const [isPaid, setIsPaid] = useState(false);
+//   const [detailsSaved, setDetailsSaved] = useState(false);
+
+//   // Simulate fetching cart products
+//   useEffect(() => {
+//     const cartData = [
+//       { id: "prod_001", name: "Sample Product 1", price: 49.99, quantity: 1 },
+//       { id: "prod_002", name: "Sample Product 2", price: 29.99, quantity: 2 },
+//     ];
+//     setCartProducts(cartData);
+//   }, []);
+
+//   // Calculate total price dynamically
+//   const totalPrice = cartProducts.reduce((total, product) => total + product.price * product.quantity, 0);
+
+//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const { name, value } = e.target;
+//     setCustomerDetails({
+//       ...customerDetails,
+//       [name]: value,
+//     });
+//   };
+
+//   // Save customer details
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setDetailsSaved(true);
+//   };
+
+//   // Handle successful payment
+//   const handlePaymentSuccess = () => {
+//     const orderNumber = `ORD${Date.now()}`;
+//     const orderData: OrderDetails = {
+//       orderNumber,
+//       ...customerDetails,
+//       paymentStatus: "Paid",
+//       products: cartProducts,
+//       totalPrice,
+//       shipmentTracking: "Pending",
+//       shippingMethod: "Standard",
+//       orderNotes: "Thank you for your purchase!",
+//     };
+
+//     localStorage.setItem(orderNumber, JSON.stringify(orderData));
+//     setOrderDetails(orderData);
+//     setIsPaid(true);
+//   };
+
+//   // Download Invoice (PDF)
+//   const downloadPDF = () => {
+//     if (!orderDetails) return;
+
+//     const doc = new jsPDF();
+//     doc.text("Order Invoice", 20, 20);
+//     doc.text(`Order Number: ${orderDetails.orderNumber}`, 20, 30);
+//     doc.text(`Customer Name: ${orderDetails.name}`, 20, 40);
+//     doc.text(`Address: ${orderDetails.address}`, 20, 50);
+//     doc.text(`Phone: ${orderDetails.phone}`, 20, 60);
+//     doc.text(`Zip Code: ${orderDetails.zipCode}`, 20, 70);
+//     doc.text(`City: ${orderDetails.city}`, 20, 80);
+//     doc.text(`Total Price: $${orderDetails.totalPrice.toFixed(2)}`, 20, 90);
+//     doc.text(`Payment Status: ${orderDetails.paymentStatus}`, 20, 100);
+//     doc.text(`Shipping Method: ${orderDetails.shippingMethod}`, 20, 110);
+//     doc.text(`Order Notes: ${orderDetails.orderNotes || "N/A"}`, 20, 120);
+//     doc.text("Products:", 20, 130);
+
+//     orderDetails.products.forEach((product, index) => {
+//       doc.text(
+//         `${index + 1}. ${product.name} - $${product.price.toFixed(2)} x ${product.quantity}`,
+//         20,
+//         140 + index * 10
+//       );
+//     });
+
+//     doc.save(`Order_${orderDetails.orderNumber}.pdf`);
+//   };
+
+//   return (
+//     <div className="flex justify-center my-10">
+//       <div className="flex flex-col md:flex-row space-y-10 md:space-y-0 md:space-x-10 w-full max-w-6xl">
+//         {!isPaid ? (
+//           <>
+//             {/* Customer Information Form */}
+//             <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
+//               <h2 className="text-2xl font-bold mb-4">Customer Information</h2>
+//               <form onSubmit={handleSubmit} className="space-y-4">
+//                 {["name", "address", "phone", "zipCode", "city"].map((field) => (
+//                   <div key={field}>
+//                     <label htmlFor={field} className="block capitalize">
+//                       {field}
+//                     </label>
+//                     <input
+//                       type="text"
+//                       id={field}
+//                       name={field}
+//                       value={customerDetails[field as keyof typeof customerDetails]}
+//                       onChange={handleInputChange}
+//                       className="w-full border border-gray-300 p-3 rounded"
+//                       required
+//                     />
+//                   </div>
+//                 ))}
+//                 <button
+//                   type="submit"
+//                   className="bg-teal-600 text-white p-3 rounded w-full mt-4"
+//                 >
+//                   Submit Details
+//                 </button>
+//               </form>
+
+//               {detailsSaved && (
+//                 <p className="text-green-600 mt-4 font-bold flex items-center">
+//                   ✅ Your details have been saved!
+//                 </p>
+//               )}
+//             </div>
+
+//             {/* Stripe Payment Form */}
+//             <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
+//               <h2 className="text-2xl font-bold mb-4">Complete Your Payment</h2>
+//               <Elements
+//                 stripe={stripePromise}
+//                 options={{
+//                   mode: "payment",
+//                   amount: convertToSubCurrency(totalPrice > 0 ? totalPrice : 1),
+//                   currency: "usd",
+//                 }}
+//               >
+//                 {totalPrice > 0 ? (
+//                   <CheckoutPage amount={totalPrice} />
+//                 ) : (
+//                   <p className="text-red-500">Your cart is empty. Add products to continue.</p>
+//                 )}
+//               </Elements>
+//             </div>
+//           </>
+//         ) : (
+//           <div className="flex-1 bg-white p-6 rounded-lg shadow-lg text-center">
+//             <h2 className="text-2xl font-bold mb-4 text-teal-600">
+//               🎉 Thank You for Your Purchase!
+//             </h2>
+//             <p className="mb-4">Your order details:</p>
+//             <div className="text-left border p-4 rounded-lg">
+//               <p><strong>Order Number:</strong> {orderDetails?.orderNumber}</p>
+//               <p><strong>Total Price:</strong> ${orderDetails?.totalPrice.toFixed(2)}</p>
+//               <p><strong>Payment Status:</strong> {orderDetails?.paymentStatus}</p>
+//               <p className="font-bold">Products:</p>
+//               {orderDetails?.products.map((product, index) => (
+//                 <p key={index}>
+//                   {index + 1}. {product.name} - ${product.price.toFixed(2)} x {product.quantity}
+//                 </p>
+//               ))}
+//             </div>
+//             <button
+//               onClick={downloadPDF}
+//               className="bg-teal-600 text-white p-3 rounded mt-4"
+//             >
+//               📄 Download Invoice
+//             </button>
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Checkout;
+
+// "use client";
+// import { useState, useEffect } from "react";
+// import convertToSubCurrency from "../lib/ConvertToSubCurrency";
+// import CheckoutPage from "@/app/Stripe/CheckoutPage";
+// import { Elements } from "@stripe/react-stripe-js";
+// import { loadStripe } from "@stripe/stripe-js";
+// import jsPDF from "jspdf";
+
+// // Load Stripe
+// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "");
+
+// // TypeScript Interfaces
+// interface Product {
+//   id: string;
+//   name: string;
+//   price: number;
+//   quantity: number;
+// }
+
+// interface OrderDetails {
+//   orderNumber: string;
+//   name: string;
+//   address: string;
+//   phone: string;
+//   zipCode: string;
+//   city: string;
+//   paymentStatus: string;
+//   products: Product[];
+//   totalPrice: number;
+//   shipmentTracking: string;
+//   shippingMethod: string;
+//   orderNotes: string | null;
+// }
+
+// const Checkout = () => {
+//   // Fetch product details dynamically from cart (Simulating cart)
+//   const [cartProducts, setCartProducts] = useState<Product[]>([]);
+//   const [customerDetails, setCustomerDetails] = useState({
+//     name: "",
+//     address: "",
+//     phone: "",
+//     zipCode: "",
+//     city: "",
+//   });
+
+//   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
+//   const [isPaid, setIsPaid] = useState(false);
+//   const [detailsSaved, setDetailsSaved] = useState(false);
+
+//   // Simulate fetching cart products
+//   useEffect(() => {
+//     const cartData = [
+//       { id: "prod_001", name: "Sample Product 1", price: 49.99, quantity: 1 },
+//       { id: "prod_002", name: "Sample Product 2", price: 29.99, quantity: 2 },
+//     ];
+//     setCartProducts(cartData);
+//   }, []);
+
+//   // Calculate total price dynamically
+//   const totalPrice = cartProducts.reduce((total, product) => total + product.price * product.quantity, 0);
+
+//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const { name, value } = e.target;
+//     setCustomerDetails({
+//       ...customerDetails,
+//       [name]: value,
+//     });
+//   };
+
+//   // Save customer details
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setDetailsSaved(true); // Show green checkmark message
+//   };
+
+//   // Handle successful payment
+//   const handlePaymentSuccess = () => {
+//     const orderNumber = `ORD${Date.now()}`;
+//     const orderData: OrderDetails = {
+//       orderNumber,
+//       ...customerDetails,
+//       paymentStatus: "Paid",
+//       products: cartProducts,
+//       totalPrice,
+//       shipmentTracking: "Pending",
+//       shippingMethod: "Standard",
+//       orderNotes: "Thank you for your purchase!",
+//     };
+
+//     localStorage.setItem(orderNumber, JSON.stringify(orderData));
+//     setOrderDetails(orderData);
+//     setIsPaid(true);
+//   };
+
+//   // Download Invoice (PDF)
+//   const downloadPDF = () => {
+//     if (!orderDetails) return;
+
+//     const doc = new jsPDF();
+//     doc.text("Order Invoice", 20, 20);
+//     doc.text(`Order Number: ${orderDetails.orderNumber}`, 20, 30);
+//     doc.text(`Customer Name: ${orderDetails.name}`, 20, 40);
+//     doc.text(`Address: ${orderDetails.address}`, 20, 50);
+//     doc.text(`Phone: ${orderDetails.phone}`, 20, 60);
+//     doc.text(`Zip Code: ${orderDetails.zipCode}`, 20, 70);
+//     doc.text(`City: ${orderDetails.city}`, 20, 80);
+//     doc.text(`Total Price: $${orderDetails.totalPrice.toFixed(2)}`, 20, 90);
+//     doc.text(`Payment Status: ${orderDetails.paymentStatus}`, 20, 100);
+//     doc.text(`Shipping Method: ${orderDetails.shippingMethod}`, 20, 110);
+//     doc.text(`Order Notes: ${orderDetails.orderNotes || "N/A"}`, 20, 120);
+//     doc.text("Products:", 20, 130);
+
+//     orderDetails.products.forEach((product, index) => {
+//       doc.text(
+//         `${index + 1}. ${product.name} - $${product.price.toFixed(2)} x ${product.quantity}`,
+//         20,
+//         140 + index * 10
+//       );
+//     });
+
+//     doc.save(`Order_${orderDetails.orderNumber}.pdf`);
+//   };
+
+//   return (
+//     <div className="flex justify-center my-10">
+//       <div className="flex flex-col md:flex-row space-y-10 md:space-y-0 md:space-x-10 w-full max-w-6xl">
+//         {!isPaid ? (
+//           <>
+//             {/* Customer Information Form */}
+//             <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
+//               <h2 className="text-2xl font-bold mb-4">Customer Information</h2>
+//               <form onSubmit={handleSubmit} className="space-y-4">
+//                 {["name", "address", "phone", "zipCode", "city"].map((field) => (
+//                   <div key={field}>
+//                     <label htmlFor={field} className="block capitalize">
+//                       {field}
+//                     </label>
+//                     <input
+//                       type="text"
+//                       id={field}
+//                       name={field}
+//                       value={customerDetails[field as keyof typeof customerDetails]}
+//                       onChange={handleInputChange}
+//                       className="w-full border border-gray-300 p-3 rounded"
+//                       required
+//                     />
+//                   </div>
+//                 ))}
+//                 <button
+//                   type="submit"
+//                   className="bg-teal-600 text-white p-3 rounded w-full mt-4"
+//                 >
+//                   Submit Details
+//                 </button>
+//               </form>
+
+//               {detailsSaved && (
+//                 <p className="text-green-600 mt-4 font-bold flex items-center">
+//                   ✅ Your details have been saved!
+//                 </p>
+//               )}
+//             </div>
+
+//             {/* Stripe Payment Form */}
+//             <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
+//               <h2 className="text-2xl font-bold mb-4">Complete Your Payment</h2>
+//               <Elements
+//                 stripe={stripePromise}
+//                 options={{
+//                   mode: "payment",
+//                   amount: convertToSubCurrency(totalPrice > 0 ? totalPrice : 1),
+//                   currency: "usd",
+//                 }}
+//               >
+//                  {totalPrice > 0 ? (
+//                  <CheckoutPage amount={totalPrice} />
+//                  ) : (
+//                  <p className="text-red-500">Your cart is empty. Add products to continue.</p>
+//                 )}
+//               </Elements>
+//             </div>
+//           </>
+//         ) : (
+//           <div className="flex-1 bg-white p-6 rounded-lg shadow-lg text-center">
+//             <h2 className="text-2xl font-bold mb-4 text-teal-600">
+//               🎉 Thank You for Your Purchase!
+//             </h2>
+//             <p className="mb-4">Your order details:</p>
+//             <div className="text-left border p-4 rounded-lg">
+//               <p><strong>Order Number:</strong> {orderDetails?.orderNumber}</p>
+//               <p><strong>Total Price:</strong> ${orderDetails?.totalPrice.toFixed(2)}</p>
+//               <p><strong>Payment Status:</strong> {orderDetails?.paymentStatus}</p>
+//               <p className="font-bold">Products:</p>
+//               {orderDetails?.products.map((product, index) => (
+//                 <p key={index}>
+//                   {index + 1}. {product.name} - ${product.price.toFixed(2)} x {product.quantity}
+//                 </p>
+//               ))}
+//             </div>
+//             <button
+//               onClick={downloadPDF}
+//               className="bg-teal-600 text-white p-3 rounded mt-4"
+//             >
+//               📄 Download Invoice
+//             </button>
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
 // };
 
 // export default Checkout;
@@ -426,8 +1172,23 @@
 
 //     const handleSubmit = (e: { preventDefault: () => void; }) => {
 //         e.preventDefault();
-//         // You can handle customer details submission here (e.g., send to your API)
-//         console.log(customerDetails);
+//         // Save customer details to localStorage
+//         const orderNumber = `ORD${Date.now()}`; // Example order number
+//         const orderData = {
+//             orderNumber,
+//             ...customerDetails,
+//             paymentStatus: 'Pending', // You can update this after payment
+//             products: [
+//                 { name: 'Sample Product', price: amount, quantity: 1 }
+//             ],
+//             totalPrice: amount,
+//             shipmentTracking: '',
+//             shippingMethod: 'Standard',
+//             orderNotes: null,
+//         };
+//         localStorage.setItem(orderNumber, JSON.stringify(orderData));
+//         // Redirect to OrderPage with orderNumber
+//         window.location.href = `/order?orderNumber=${orderNumber}`;
 //     };
 
 //     return (
@@ -522,150 +1283,109 @@
 
 // export default Checkout;
 
-"use client";
-import { useState } from 'react';
-import convertToSubCurrency from '../lib/ConvertToSubCurrency';
-import CheckoutPage from '@/app/Stripe/CheckoutPage';
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+// "use client";
 
-if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
-    throw new Error('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not defined');
-}
+// import { useState, useEffect } from "react";
+// import convertToSubCurrency from "../lib/ConvertToSubCurrency";
+// import CheckoutPage from "@/app/Stripe/CheckoutPage";
+// import { Elements } from "@stripe/react-stripe-js";
+// import { loadStripe } from "@stripe/stripe-js";
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+// const stripePromise = loadStripe(
+//   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ""
+// );
 
-const Checkout = () => {
-    const amount = 49.99;
-    const [customerDetails, setCustomerDetails] = useState({
-        name: '',
-        address: '',
-        phone: '',
-        zipCode: '',
-        city: ''
-    });
+// const Checkout = () => {
+//   const amount = 49.99;
+//   const [customerDetails, setCustomerDetails] = useState({
+//     name: "",
+//     address: "",
+//     phone: "",
+//     zipCode: "",
+//     city: "",
+//   });
 
-    const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
-        const { name, value } = e.target;
-        setCustomerDetails({
-            ...customerDetails,
-            [name]: value
-        });
-    };
+//   const handleInputChange = (e: { target: { name: string; value: string } }) => {
+//     const { name, value } = e.target;
+//     setCustomerDetails({
+//       ...customerDetails,
+//       [name]: value,
+//     });
+//   };
 
-    const handleSubmit = (e: { preventDefault: () => void; }) => {
-        e.preventDefault();
-        // Save customer details to localStorage
-        const orderNumber = `ORD${Date.now()}`; // Example order number
-        const orderData = {
-            orderNumber,
-            ...customerDetails,
-            paymentStatus: 'Pending', // You can update this after payment
-            products: [
-                { name: 'Sample Product', price: amount, quantity: 1 }
-            ],
-            totalPrice: amount,
-            shipmentTracking: '',
-            shippingMethod: 'Standard',
-            orderNotes: null,
-        };
-        localStorage.setItem(orderNumber, JSON.stringify(orderData));
-        // Redirect to OrderPage with orderNumber
-        window.location.href = `/order?orderNumber=${orderNumber}`;
-    };
+//   const handleSubmit = (e: { preventDefault: () => void }) => {
+//     e.preventDefault();
+//     if (typeof window !== "undefined") {
+//       // Ensure this runs only in the browser
+//       const orderNumber = `ORD${Date.now()}`;
+//       const orderData = {
+//         orderNumber,
+//         ...customerDetails,
+//         paymentStatus: "Pending",
+//         products: [{ name: "Sample Product", price: amount, quantity: 1 }],
+//         totalPrice: amount,
+//         shipmentTracking: "",
+//         shippingMethod: "Standard",
+//         orderNotes: null,
+//       };
 
-    return (
-        <div className="flex justify-center my-10">
-            <div className="flex flex-col md:flex-row space-y-10 md:space-y-0 md:space-x-10 w-full max-w-6xl">
-                {/* Customer Information Form (Left Side) */}
-                <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
-                    <h2 className="text-2xl font-bold mb-4">Customer Information</h2>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
-                            <label htmlFor="name" className="block">Name</label>
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                value={customerDetails.name}
-                                onChange={handleInputChange}
-                                className="w-full border border-gray-300 p-3 rounded"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="address" className="block">Address</label>
-                            <input
-                                type="text"
-                                id="address"
-                                name="address"
-                                value={customerDetails.address}
-                                onChange={handleInputChange}
-                                className="w-full border border-gray-300 p-3 rounded"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="phone" className="block">Phone Number</label>
-                            <input
-                                type="tel"
-                                id="phone"
-                                name="phone"
-                                value={customerDetails.phone}
-                                onChange={handleInputChange}
-                                className="w-full border border-gray-300 p-3 rounded"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="zipCode" className="block">Zip Code</label>
-                            <input
-                                type="text"
-                                id="zipCode"
-                                name="zipCode"
-                                value={customerDetails.zipCode}
-                                onChange={handleInputChange}
-                                className="w-full border border-gray-300 p-3 rounded"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="city" className="block">City</label>
-                            <input
-                                type="text"
-                                id="city"
-                                name="city"
-                                value={customerDetails.city}
-                                onChange={handleInputChange}
-                                className="w-full border border-gray-300 p-3 rounded"
-                                required
-                            />
-                        </div>
-                        <button type="submit" className="bg-teal-600 text-white p-3 rounded w-full mt-4">Submit</button>
-                    </form>
-                </div>
+//       localStorage.setItem(orderNumber, JSON.stringify(orderData));
+//       window.location.href = `/order?orderNumber=${orderNumber}`;
+//     }
+//   };
 
-                {/* Stripe Payment Form (Right Side) */}
-                <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
-                    <h2 className="text-2xl font-bold mb-4">Complete Your Payment</h2>
-                    <Elements
-                        stripe={stripePromise}
-                        options={{
-                            mode: 'payment',
-                            amount: convertToSubCurrency(amount),
-                            currency: 'usd'
-                        }}
-                    >
-                        <CheckoutPage amount={amount} />
-                    </Elements>
-                </div>
-            </div>
-        </div>
-    );
-};
+//   return (
+//     <div className="flex justify-center my-10">
+//       <div className="flex flex-col md:flex-row space-y-10 md:space-y-0 md:space-x-10 w-full max-w-6xl">
+//         {/* Customer Information Form */}
+//         <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
+//           <h2 className="text-2xl font-bold mb-4">Customer Information</h2>
+//           <form onSubmit={handleSubmit} className="space-y-4">
+//             {["name", "address", "phone", "zipCode", "city"].map((field) => (
+//               <div key={field}>
+//                 <label htmlFor={field} className="block capitalize">
+//                   {field}
+//                 </label>
+//                 <input
+//                   type="text"
+//                   id={field}
+//                   name={field}
+//                   value={customerDetails[field as keyof typeof customerDetails]}
+//                   onChange={handleInputChange}
+//                   className="w-full border border-gray-300 p-3 rounded"
+//                   required
+//                 />
+//               </div>
+//             ))}
+//             <button
+//               type="submit"
+//               className="bg-teal-600 text-white p-3 rounded w-full mt-4"
+//             >
+//               Submit
+//             </button>
+//           </form>
+//         </div>
 
-export default Checkout;
+//         {/* Stripe Payment Form */}
+//         <div className="flex-1 bg-white p-6 rounded-lg shadow-lg">
+//           <h2 className="text-2xl font-bold mb-4">Complete Your Payment</h2>
+//           <Elements
+//             stripe={stripePromise}
+//             options={{
+//               mode: "payment",
+//               amount: convertToSubCurrency(amount),
+//               currency: "usd",
+//             }}
+//           >
+//             <CheckoutPage amount={amount} />
+//           </Elements>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
 
+// export default Checkout;
 
 
 
