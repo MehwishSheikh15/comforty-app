@@ -3,6 +3,8 @@ import { useState, useEffect, Suspense } from 'react'
 import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js'
 import convertToSubCurrency from '../lib/ConvertToSubCurrency'
 
+
+
 const CheckoutPage = ({ amount }: { amount: number }) => {
     console.log(window.location.host)
 

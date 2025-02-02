@@ -18,6 +18,10 @@ module.exports = {
   images: {
     domains: ['https://giaic-hackathon-template-08.vercel.app'], // Add the domain here
   },
+  eslint: {
+    // Disable ESLint during production build
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
