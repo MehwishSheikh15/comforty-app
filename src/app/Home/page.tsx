@@ -281,7 +281,6 @@ import { useCart } from '../context/cartContext';
 import { createClient } from '@sanity/client';
 import imageUrlBuilder from '@sanity/image-url'; // Import the image URL builder
 import { FaSearch } from 'react-icons/fa';
-
 // Create a Sanity client instance
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
@@ -396,7 +395,6 @@ const Hero = () => {
       <img
           src="/CompanyLogo.png" 
           alt="Company Logo"
-          
           className="h-16 sm:h-24 rounded-full w-auto"
         />
       </div>
@@ -428,7 +426,7 @@ const Hero = () => {
                   {product.badge.toUpperCase()}
                 </span>
               )}
-              <img 
+              <img
                 src={urlFor(product.image)} // Generate image URL using the Sanity image builder
                 alt={product.title}
                 className="w-full h-50 object-cover rounded-lg mb-4"

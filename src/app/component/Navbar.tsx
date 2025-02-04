@@ -592,11 +592,11 @@ const Navbar: React.FC = () => {
                 About Us
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link href="/order" className="text-teal-900 hover:text-teal-500">
                 Order
               </Link>
-            </li>
+            </li> */}
           </ul>
           <div className="mr-4 hover:underline hidden sm:block">
             <Link href="/Contact" className="text-teal-900 hover:text-teal-500">
@@ -669,11 +669,11 @@ const Navbar: React.FC = () => {
             About Us
           </Link>
         </li>
-        <li>
+        {/* <li>
           <Link href="/Order" className="text-teal-500 hover:text-teal-950">
             Order
           </Link>
-        </li>
+        </li> */}
         <li>
           <Link href="/Contact" className="text-teal-500 hover:text-teal-950">
             ContactUs: 035162895

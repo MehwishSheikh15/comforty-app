@@ -6,7 +6,6 @@ import { allProductsQuery } from "../api/query"; // Adjust the path as necessary
 import { useCart } from "../context/cartContext";
 import Link from "next/link";
 import imageUrlBuilder from "@sanity/image-url"; // Import the image URL builder
-
 // Sanity image URL builder setup
 const builder = imageUrlBuilder(client);
 

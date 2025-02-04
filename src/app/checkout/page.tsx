@@ -485,7 +485,7 @@
 // Checkout.tsx
 "use client";
 import { useState, useEffect } from "react";
-import convertToSubCurrency from "../lib/ConvertToSubCurrency";
+import convertToSubCurrency from "@/app/lib/ConvertToSubCurrency";
 import CheckoutPage from "@/app/Stripe/CheckoutPage";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
